@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FhirPathTester"
         mc:Ignorable="d"
-        Title="FHIRpath Tester" Height="750" Width="1024">
+        Title="FHIRpath Tester DSTU2" Height="750" Width="1024">
     <Window.Resources>
         <!--<Style TargetType="TextBox">
             <Setter x:Name="styleTextSize" Property="FontSize" Value="{Binding TextControlFontSize, Mode=TwoWay}"/>
