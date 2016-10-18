@@ -126,7 +126,7 @@ namespace FhirPathTester
                 OutputExpression(func.Focus, sb, prefix + "-- ");
                 foreach (var item in func.Arguments)
                 {
-                    OutputExpression(item, sb, prefix+"    ");
+                    OutputExpression(item, sb, prefix + "    ");
                 }
                 return;
             }
@@ -161,11 +161,14 @@ namespace FhirPathTester
             DomainResource resource = null;
             try
             {
-                resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<DomainResource>(textboxInputXML.Text);
+                if (textboxInputXML.Text.StartsWith("{"))
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<DomainResource>(textboxInputXML.Text);
+                else
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<DomainResource>(textboxInputXML.Text);
             }
             catch (Exception ex)
             {
-                textboxResult.Text = "Resource XML read error:\r\n" + ex.Message;
+                textboxResult.Text = "Resource read error:\r\n" + ex.Message;
                 return;
             }
 

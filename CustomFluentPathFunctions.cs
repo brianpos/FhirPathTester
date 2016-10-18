@@ -89,7 +89,7 @@ namespace FhirPathTester
                         int value = (int)amount;
 
                         // Need to convert the amount and field to compensate for partials
-                        TimeSpan ts = new TimeSpan();
+                        //TimeSpan ts = new TimeSpan();
 
                         switch (field)
                         {
