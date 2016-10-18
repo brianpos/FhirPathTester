@@ -12,6 +12,58 @@ using System.Linq;
 
 namespace FhirPathTester
 {
+    public static class CustomExtensions
+    {
+        public static IEnumerable<dstu2.Hl7.Fhir.Model.Base> ToFhirValues(this IEnumerable<IValueProvider> results)
+        {
+            return results.Select(r =>
+            {
+                if (r == null)
+                    return null;
+
+                if (r is dstu2.Hl7.Fhir.FluentPath.PocoNavigator && (r as dstu2.Hl7.Fhir.FluentPath.PocoNavigator).FhirValue != null)
+                {
+                    return ((dstu2.Hl7.Fhir.FluentPath.PocoNavigator)r).FhirValue;
+                }
+                object result;
+                if (r.Value is Hl7.FluentPath.ConstantValue)
+                {
+                    result = (r.Value as Hl7.FluentPath.ConstantValue).Value;
+                }
+                else
+                {
+                    result = r.Value;
+                }
+
+                if (result is bool)
+                {
+                    return new dstu2.Hl7.Fhir.Model.FhirBoolean((bool)result);
+                }
+                if (result is long)
+                {
+                    return new dstu2.Hl7.Fhir.Model.Integer((int)(long)result);
+                }
+                if (result is decimal)
+                {
+                    return new dstu2.Hl7.Fhir.Model.FhirDecimal((decimal)result);
+                }
+                if (result is string)
+                {
+                    return new dstu2.Hl7.Fhir.Model.FhirString((string)result);
+                }
+                if (result is PartialDateTime)
+                {
+                    var dt = (PartialDateTime)result;
+                    return new dstu2.Hl7.Fhir.Model.FhirDateTime(dt.ToUniversalTime());
+                }
+                else
+                {
+                    // This will throw an exception if the type isn't one of the FHIR types!
+                    return (dstu2.Hl7.Fhir.Model.Base)result;
+                }
+            });
+        }
+    }
     public class CustomFluentPathFunctions
     {
         static private SymbolTable _st;

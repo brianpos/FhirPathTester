@@ -34,7 +34,7 @@ namespace FhirPathTester
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void ButtonGo_Click(object sender, RoutedEventArgs e)
+        private IValueProvider GetResourceNavigator()
         {
             DomainResource resource = null;
             try
@@ -47,8 +47,17 @@ namespace FhirPathTester
             catch (Exception ex)
             {
                 textboxResult.Text = "Resource read error:\r\n" + ex.Message;
-                return;
+                return null;
             }
+            var inputNav = new PocoNavigator(resource);
+            return inputNav;
+        }
+
+        private void ButtonGo_Click(object sender, RoutedEventArgs e)
+        {
+            var inputNav = GetResourceNavigator();
+            if (inputNav == null)
+                return;
 
             // Don't need to cache this, it is cached in the fhir-client
             CompiledExpression xps = null;
@@ -63,11 +72,10 @@ namespace FhirPathTester
             }
 
             IEnumerable<IValueProvider> prepopulatedValues = null;
-            if (resource != null && xps != null)
+            if (xps != null)
             {
                 try
                 {
-                    var inputNav = new PocoNavigator(resource);
                     prepopulatedValues = xps(inputNav, inputNav);
                 }
                 catch (Exception ex)
@@ -82,10 +90,14 @@ namespace FhirPathTester
                 {
                     if (prepopulatedValues.Count() > 0)
                     {
-                        foreach (var t2 in prepopulatedValues)
+                        foreach (var t2 in prepopulatedValues.ToFhirValues())
                         {
                             if (t2 != null)
-                                textboxResult.Text += t2.Value.ToString() + "\r\n";
+                            {
+                                // output the content as XML fragments
+                                var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2);
+                                textboxResult.Text += fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", "") + "\r\n";
+                            }
                             // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
                         }
                     }
@@ -158,19 +170,9 @@ namespace FhirPathTester
 
         private void ButtonPredicate_Click(object sender, RoutedEventArgs e)
         {
-            DomainResource resource = null;
-            try
-            {
-                if (textboxInputXML.Text.StartsWith("{"))
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<DomainResource>(textboxInputXML.Text);
-                else
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<DomainResource>(textboxInputXML.Text);
-            }
-            catch (Exception ex)
-            {
-                textboxResult.Text = "Resource read error:\r\n" + ex.Message;
+            var inputNav = GetResourceNavigator();
+            if (inputNav == null)
                 return;
-            }
 
             // Don't need to cache this, it is cached in the fhir-client
             Hl7.FluentPath.CompiledExpression xps = null;
@@ -184,11 +186,10 @@ namespace FhirPathTester
                 return;
             }
 
-            if (resource != null && xps != null)
+            if (xps != null)
             {
                 try
                 {
-                    var inputNav = new PocoNavigator(resource);
                     var result = xps.Predicate(inputNav, inputNav);
                     textboxResult.Text = result.ToString();
                 }
@@ -234,10 +235,6 @@ namespace FhirPathTester
         private void textboxInputXML_PreviewDragOver(object sender, DragEventArgs e)
         {
             e.Handled = true;
-        }
-
-        private void textboxInputXML_PreviewDrop(object sender, DragEventArgs e)
-        {
         }
     }
 }

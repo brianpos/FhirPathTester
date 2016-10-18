@@ -53,7 +53,7 @@
             </Grid.RowDefinitions>
             <Label>Resource XML/Json
             </Label>
-            <TextBox Grid.Row="1" x:Name="textboxInputXML" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" HorizontalScrollBarVisibility="Auto" TextAlignment="Left" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" PreviewDragOver="textboxInputXML_PreviewDragOver" PreviewDrop="textboxInputXML_PreviewDrop"></TextBox>
+            <TextBox Grid.Row="1" x:Name="textboxInputXML" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" HorizontalScrollBarVisibility="Auto" TextAlignment="Left" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" PreviewDragOver="textboxInputXML_PreviewDragOver"></TextBox>
         </Grid>
     </Grid>
 </Window>
