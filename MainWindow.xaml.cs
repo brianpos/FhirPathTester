@@ -36,13 +36,13 @@ namespace FhirPathTester
 
         private IValueProvider GetResourceNavigator()
         {
-            DomainResource resource = null;
+            Resource resource = null;
             try
             {
                 if (textboxInputXML.Text.StartsWith("{"))
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<DomainResource>(textboxInputXML.Text);
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<Resource>(textboxInputXML.Text);
                 else
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<DomainResource>(textboxInputXML.Text);
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<Resource>(textboxInputXML.Text);
             }
             catch (Exception ex)
             {
