@@ -4,8 +4,8 @@ extern alias stu3;
 using Hl7.ElementModel;
 // using Hl7.Fhir.FluentPath;
 //using Hl7.Fhir.Model;
-using Hl7.FluentPath;
-using Hl7.FluentPath.Expressions;
+using Hl7.FhirPath;
+using Hl7.FhirPath.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,21 +14,21 @@ namespace FhirPathTester
 {
     public static class CustomExtensions
     {
-        public static IEnumerable<dstu2.Hl7.Fhir.Model.Base> ToFhirValues(this IEnumerable<IValueProvider> results)
+        public static IEnumerable<dstu2.Hl7.Fhir.Model.Base> ToFhirValues(this IEnumerable<IElementNavigator> results)
         {
             return results.Select(r =>
             {
                 if (r == null)
                     return null;
 
-                if (r is dstu2.Hl7.Fhir.FluentPath.PocoNavigator && (r as dstu2.Hl7.Fhir.FluentPath.PocoNavigator).FhirValue != null)
+                if (r is dstu2.Hl7.Fhir.FhirPath.PocoNavigator && (r as dstu2.Hl7.Fhir.FhirPath.PocoNavigator).FhirValue != null)
                 {
-                    return ((dstu2.Hl7.Fhir.FluentPath.PocoNavigator)r).FhirValue;
+                    return ((dstu2.Hl7.Fhir.FhirPath.PocoNavigator)r).FhirValue;
                 }
                 object result;
-                if (r.Value is Hl7.FluentPath.ConstantValue)
+                if (r.Value is Hl7.FhirPath.ConstantValue)
                 {
-                    result = (r.Value as Hl7.FluentPath.ConstantValue).Value;
+                    result = (r.Value as Hl7.FhirPath.ConstantValue).Value;
                 }
                 else
                 {
@@ -79,17 +79,17 @@ namespace FhirPathTester
                     // Custom function that returns the name of the property, rather than its value
                     _st.Add("propname", (object f) =>
                     {
-                        if (f is IEnumerable<IValueProvider>)
+                        if (f is IEnumerable<IElementNavigator>)
                         {
-                            object[] bits = (f as IEnumerable<IValueProvider>).Select(i =>
+                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
                             {
-                                if (i is stu3.Hl7.Fhir.FluentPath.PocoNavigator)
+                                if (i is stu3.Hl7.Fhir.FhirPath.PocoNavigator)
                                 {
-                                    return (i as stu3.Hl7.Fhir.FluentPath.PocoNavigator).Name;
+                                    return (i as stu3.Hl7.Fhir.FhirPath.PocoNavigator).Name;
                                 }
-                                if (i is dstu2.Hl7.Fhir.FluentPath.PocoNavigator)
+                                if (i is dstu2.Hl7.Fhir.FhirPath.PocoNavigator)
                                 {
-                                    return (i as dstu2.Hl7.Fhir.FluentPath.PocoNavigator).Name;
+                                    return (i as dstu2.Hl7.Fhir.FhirPath.PocoNavigator).Name;
                                 }
                                 return "?";
                             }).ToArray();
@@ -99,17 +99,17 @@ namespace FhirPathTester
                     });
                     _st.Add("pathname", (object f) =>
                     {
-                        if (f is IEnumerable<IValueProvider>)
+                        if (f is IEnumerable<IElementNavigator>)
                         {
-                            object[] bits = (f as IEnumerable<IValueProvider>).Select(i =>
+                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
                             {
-                                if (i is stu3.Hl7.Fhir.FluentPath.PocoNavigator)
+                                if (i is stu3.Hl7.Fhir.FhirPath.PocoNavigator)
                                 {
-                                    return (i as stu3.Hl7.Fhir.FluentPath.PocoNavigator).Path;
+                                    return (i as stu3.Hl7.Fhir.FhirPath.PocoNavigator).Path;
                                 }
-                                if (i is dstu2.Hl7.Fhir.FluentPath.PocoNavigator)
+                                if (i is dstu2.Hl7.Fhir.FhirPath.PocoNavigator)
                                 {
-                                    return (i as dstu2.Hl7.Fhir.FluentPath.PocoNavigator).Path;
+                                    return (i as dstu2.Hl7.Fhir.FhirPath.PocoNavigator).Path;
                                 }
                                 return "?";
                             }).ToArray();

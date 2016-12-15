@@ -2,10 +2,10 @@
 extern alias stu3;
 
 using Hl7.ElementModel;
-using dstu2.Hl7.Fhir.FluentPath;
+using dstu2.Hl7.Fhir.FhirPath;
 using dstu2.Hl7.Fhir.Model;
-using Hl7.FluentPath;
-using Hl7.FluentPath.Expressions;
+using Hl7.FhirPath;
+using Hl7.FhirPath.Expressions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -34,7 +34,7 @@ namespace FhirPathTester
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private IValueProvider GetResourceNavigator()
+        private IElementNavigator GetResourceNavigator()
         {
             Resource resource = null;
             try
@@ -71,7 +71,7 @@ namespace FhirPathTester
                 return;
             }
 
-            IEnumerable<IValueProvider> prepopulatedValues = null;
+            IEnumerable<IElementNavigator> prepopulatedValues = null;
             if (xps != null)
             {
                 try
@@ -122,7 +122,7 @@ namespace FhirPathTester
             textboxResult.Text += "\r\n\r\n----------------\r\n" + sb.ToString();
         }
 
-        private void OutputExpression(Hl7.FluentPath.Expressions.Expression expr, StringBuilder sb, string prefix)
+        private void OutputExpression(Hl7.FhirPath.Expressions.Expression expr, StringBuilder sb, string prefix)
         {
             if (expr is ChildExpression)
             {
@@ -166,7 +166,7 @@ namespace FhirPathTester
             sb.Append(expr.GetType().ToString());
         }
 
-        Hl7.FluentPath.FluentPathCompiler _compiler = new FluentPathCompiler(CustomFluentPathFunctions.Scope);
+        Hl7.FhirPath.FhirPathCompiler _compiler = new FhirPathCompiler(CustomFluentPathFunctions.Scope);
 
         private void ButtonPredicate_Click(object sender, RoutedEventArgs e)
         {
@@ -175,7 +175,7 @@ namespace FhirPathTester
                 return;
 
             // Don't need to cache this, it is cached in the fhir-client
-            Hl7.FluentPath.CompiledExpression xps = null;
+            Hl7.FhirPath.CompiledExpression xps = null;
             try
             {
                 xps = _compiler.Compile(textboxExpression.Text);
@@ -228,8 +228,7 @@ namespace FhirPathTester
 
         private void textboxInputXML_DragOver(object sender, DragEventArgs e)
         {
-            // e.AllowedEffects = DragDropEffects.Copy;
-            e.Effects = DragDropEffects.Copy;
+            e.Effects = DragDropEffects.Copy | DragDropEffects.Link;
         }
 
         private void textboxInputXML_PreviewDragOver(object sender, DragEventArgs e)
