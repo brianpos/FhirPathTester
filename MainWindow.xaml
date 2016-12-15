@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FhirPathTester"
         mc:Ignorable="d"
-        Title="FHIRpath Tester DSTU2" Height="750" Width="1024">
+        Title="FHIRpath Tester DSTU2/STU3" Height="750" Width="1024">
     <Window.Resources>
         <!--<Style TargetType="TextBox">
             <Setter x:Name="styleTextSize" Property="FontSize" Value="{Binding TextControlFontSize, Mode=TwoWay}"/>
@@ -29,7 +29,16 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <Label Grid.Row="0">Expression</Label>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0">Expression</Label>
+                    <Label Grid.Column="1" x:Name="labelDSTU2">DSTU2</Label>
+                    <Label Grid.Column="2" x:Name="labelSTU3">STU3</Label>
+                </Grid>
                 <TextBox x:Name="textboxExpression" Grid.Row="1" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" MouseWheel="textboxExpression_MouseWheel" FontSize="{Binding Path=TextControlFontSize}" TextWrapping="Wrap"  TextAlignment="Left"></TextBox>
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <Button Padding="8" Click="ButtonGo_Click">Extract</Button>

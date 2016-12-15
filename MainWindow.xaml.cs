@@ -2,8 +2,13 @@
 extern alias stu3;
 
 using Hl7.ElementModel;
-using dstu2.Hl7.Fhir.FhirPath;
-using dstu2.Hl7.Fhir.Model;
+
+using fp2 = dstu2.Hl7.Fhir.FhirPath;
+using f2 = dstu2.Hl7.Fhir.Model;
+
+using fp3 = stu3.Hl7.Fhir.FhirPath;
+using f3 = stu3.Hl7.Fhir.Model;
+
 using Hl7.FhirPath;
 using Hl7.FhirPath.Expressions;
 using System;
@@ -13,7 +18,6 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
-// using static Hl7.FluentPath.PathExpression;
 
 namespace FhirPathTester
 {
@@ -34,23 +38,74 @@ namespace FhirPathTester
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private IElementNavigator GetResourceNavigator()
+        private IElementNavigator GetResourceNavigatorDSTU2(out string parseErrors)
         {
-            Resource resource = null;
+            f2.Resource resource = null;
             try
             {
                 if (textboxInputXML.Text.StartsWith("{"))
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<Resource>(textboxInputXML.Text);
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f2.Resource>(textboxInputXML.Text);
                 else
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<Resource>(textboxInputXML.Text);
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f2.Resource>(textboxInputXML.Text);
             }
             catch (Exception ex)
             {
-                textboxResult.Text = "Resource read error:\r\n" + ex.Message;
+                parseErrors = "DSTU2 Resource read error:\r\n" + ex.Message;
                 return null;
             }
-            var inputNav = new PocoNavigator(resource);
+            parseErrors = null;
+            var inputNav = new fp2.PocoNavigator(resource);
             return inputNav;
+        }
+        private IElementNavigator GetResourceNavigatorSTU3(out string parseErrors)
+        {
+            f3.Resource resource = null;
+            try
+            {
+                if (textboxInputXML.Text.StartsWith("{"))
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f3.Resource>(textboxInputXML.Text);
+                else
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f3.Resource>(textboxInputXML.Text);
+            }
+            catch (Exception ex)
+            {
+                parseErrors = "STU3 Resource read error:\r\n" + ex.Message;
+                return null;
+            }
+            parseErrors = null;
+            var inputNav = new fp3.PocoNavigator(resource);
+            return inputNav;
+        }
+
+        private IElementNavigator GetResourceNavigator()
+        {
+            string parseErrors2;
+            var inputNavDSTU2 = GetResourceNavigatorDSTU2(out parseErrors2);
+            string parseErrors3;
+            var inputNavSTU3 = GetResourceNavigatorSTU3(out parseErrors3);
+
+            if (!string.IsNullOrEmpty(parseErrors2) || !string.IsNullOrEmpty(parseErrors3))
+            {
+                textboxResult.Text = null;
+                if (!string.IsNullOrEmpty(parseErrors2))
+                    textboxResult.Text += parseErrors2;
+                if (!string.IsNullOrEmpty(parseErrors2) && !string.IsNullOrEmpty(parseErrors3))
+                    textboxResult.Text += "\r\n--------------------\r\n";
+                if (!string.IsNullOrEmpty(parseErrors3))
+                    textboxResult.Text += parseErrors3;
+            }
+
+            if (inputNavSTU3 != null)
+                labelSTU3.Visibility = Visibility.Visible;
+            else
+                labelSTU3.Visibility = Visibility.Collapsed;
+            if (inputNavDSTU2 != null)
+            {
+                labelDSTU2.Visibility = Visibility.Visible;
+                return inputNavDSTU2;
+            }
+            labelDSTU2.Visibility = Visibility.Collapsed;
+            return inputNavSTU3;
         }
 
         private void ButtonGo_Click(object sender, RoutedEventArgs e)
