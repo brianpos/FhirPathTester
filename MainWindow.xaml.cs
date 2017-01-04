@@ -145,15 +145,32 @@ namespace FhirPathTester
                 {
                     if (prepopulatedValues.Count() > 0)
                     {
-                        foreach (var t2 in prepopulatedValues.ToFhirValues())
+                        if (inputNav is fp3.PocoNavigator)
                         {
-                            if (t2 != null)
+                            foreach (var t2 in prepopulatedValues.ToFhirValuesSTU3())
                             {
-                                // output the content as XML fragments
-                                var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2);
-                                textboxResult.Text += fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", "") + "\r\n";
+                                if (t2 != null)
+                                {
+                                    // output the content as XML fragments
+                                    var fragment = stu3.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2);
+                                    textboxResult.Text += fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", "") + "\r\n";
+                                }
+                                // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
                             }
-                            // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
+                        }
+                        if (inputNav is fp2.PocoNavigator)
+                        {
+
+                            foreach (var t2 in prepopulatedValues.ToFhirValuesDSTU2())
+                            {
+                                if (t2 != null)
+                                {
+                                    // output the content as XML fragments
+                                    var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2);
+                                    textboxResult.Text += fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", "") + "\r\n";
+                                }
+                                // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
+                            }
                         }
                     }
                 }

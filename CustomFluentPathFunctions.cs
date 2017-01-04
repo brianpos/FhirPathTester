@@ -14,7 +14,7 @@ namespace FhirPathTester
 {
     public static class CustomExtensions
     {
-        public static IEnumerable<dstu2.Hl7.Fhir.Model.Base> ToFhirValues(this IEnumerable<IElementNavigator> results)
+        public static IEnumerable<dstu2.Hl7.Fhir.Model.Base> ToFhirValuesDSTU2(this IEnumerable<IElementNavigator> results)
         {
             return results.Select(r =>
             {
@@ -60,6 +60,55 @@ namespace FhirPathTester
                 {
                     // This will throw an exception if the type isn't one of the FHIR types!
                     return (dstu2.Hl7.Fhir.Model.Base)result;
+                }
+            });
+        }
+        public static IEnumerable<stu3.Hl7.Fhir.Model.Base> ToFhirValuesSTU3(this IEnumerable<IElementNavigator> results)
+        {
+            return results.Select(r =>
+            {
+                if (r == null)
+                    return null;
+
+                if (r is stu3.Hl7.Fhir.FhirPath.PocoNavigator && (r as stu3.Hl7.Fhir.FhirPath.PocoNavigator).FhirValue != null)
+                {
+                    return ((stu3.Hl7.Fhir.FhirPath.PocoNavigator)r).FhirValue;
+                }
+                object result;
+                if (r.Value is Hl7.FhirPath.ConstantValue)
+                {
+                    result = (r.Value as Hl7.FhirPath.ConstantValue).Value;
+                }
+                else
+                {
+                    result = r.Value;
+                }
+
+                if (result is bool)
+                {
+                    return new stu3.Hl7.Fhir.Model.FhirBoolean((bool)result);
+                }
+                if (result is long)
+                {
+                    return new stu3.Hl7.Fhir.Model.Integer((int)(long)result);
+                }
+                if (result is decimal)
+                {
+                    return new stu3.Hl7.Fhir.Model.FhirDecimal((decimal)result);
+                }
+                if (result is string)
+                {
+                    return new stu3.Hl7.Fhir.Model.FhirString((string)result);
+                }
+                if (result is PartialDateTime)
+                {
+                    var dt = (PartialDateTime)result;
+                    return new stu3.Hl7.Fhir.Model.FhirDateTime(dt.ToUniversalTime());
+                }
+                else
+                {
+                    // This will throw an exception if the type isn't one of the FHIR types!
+                    return (stu3.Hl7.Fhir.Model.Base)result;
                 }
             });
         }
