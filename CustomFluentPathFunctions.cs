@@ -166,22 +166,46 @@ namespace FhirPathTester
                         }
                         return FhirValueList.Create(new object[] { "?" });
                     });
-                    //_st.Add("commonpathname", (object f) =>
-                    //{
-                    //    if (f is IEnumerable<IValueProvider>)
-                    //    {
-                    //        object[] bits = (f as IEnumerable<IValueProvider>).Select(i =>
-                    //        {
-                    //            if (i is PocoNavigator)
-                    //            {
-                    //                return (i as PocoNavigator).CommonPath;
-                    //            }
-                    //            return "?";
-                    //        }).ToArray();
-                    //        return FhirValueList.Create(bits);
-                    //    }
-                    //    return FhirValueList.Create(new object[] { "?" });
-                    //});
+                    _st.Add("shortpathname", (object f) =>
+                    {
+                        if (f is IEnumerable<IElementNavigator>)
+                        {
+                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
+                            {
+                                if (i is stu3.Hl7.Fhir.FhirPath.PocoNavigator)
+                                {
+                                    return (i as stu3.Hl7.Fhir.FhirPath.PocoNavigator).ShortPath;
+                                }
+                                if (i is dstu2.Hl7.Fhir.FhirPath.PocoNavigator)
+                                {
+                                    return (i as dstu2.Hl7.Fhir.FhirPath.PocoNavigator).ShortPath;
+                                }
+                                return "?";
+                            }).ToArray();
+                            return FhirValueList.Create(bits);
+                        }
+                        return FhirValueList.Create(new object[] { "?" });
+                    });
+                    _st.Add("commonpathname", (object f) =>
+                    {
+                        if (f is IEnumerable<IElementNavigator>)
+                        {
+                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
+                            {
+                                if (i is stu3.Hl7.Fhir.FhirPath.PocoNavigator)
+                                {
+                                    return (i as stu3.Hl7.Fhir.FhirPath.PocoNavigator).CommonPath;
+                                }
+                                if (i is dstu2.Hl7.Fhir.FhirPath.PocoNavigator)
+                                {
+                                    return (i as dstu2.Hl7.Fhir.FhirPath.PocoNavigator).CommonPath;
+                                }
+                                return "?";
+                            }).ToArray();
+                            return FhirValueList.Create(bits);
+                        }
+                        return FhirValueList.Create(new object[] { "?" });
+                    });
 
                     // Custom function for evaluating the date operation (custom Healthconnex)
                     _st.Add("dateadd", (PartialDateTime f, string field, long amount) =>
