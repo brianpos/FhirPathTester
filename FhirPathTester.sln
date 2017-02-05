@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26127.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FhirPathTester", "FhirPathTester.csproj", "{EB2E4288-28D4-407F-B019-CAAA763FA810}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FhirPathTester", "WPF\FhirPathTester.csproj", "{EB2E4288-28D4-407F-B019-CAAA763FA810}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
