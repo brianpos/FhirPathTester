@@ -1,0 +1,118 @@
+﻿<Page
+    x:Class="FhirPathTesterUWP.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FhirPathTesterUWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Name="HamburDefaultTemplate">
+            <Grid Width="240" Height="48">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <SymbolIcon Grid.Column="0" Symbol="{Binding Icon}" Foreground="White" />
+                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="16" VerticalAlignment="Center" Foreground="White" />
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <controls:HamburgerMenu PaneBackground="Black" Foreground="White" ItemTemplate="{StaticResource HamburDefaultTemplate}" x:Name="hamburgerMenuControl" Margin="0,5,0,-5">
+            <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition MinHeight="100"></RowDefinition>
+                        <RowDefinition Height="11"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition MinWidth="200"></ColumnDefinition>
+                        <ColumnDefinition Width="11"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" />
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Background="DarkGray">
+                            <Button Padding="8" Click="ButtonGo_Click">Extract</Button>
+                            <Button Padding="8" Click="ButtonPredicate_Click">Validate</Button>
+                            <TextBlock Grid.Column="1" x:Name="labelDSTU2" Padding="12,0,0,0" VerticalAlignment="Center">DSTU2</TextBlock>
+                            <TextBlock Grid.Column="2" x:Name="labelSTU3" Padding="12,0,0,0" Visibility="Collapsed" VerticalAlignment="Center">STU3</TextBlock>
+                            <!--<TextBlock VerticalAlignment="Center" Padding="12,0,0,0">Result</TextBlock>-->
+                        </StackPanel>
+                    </Grid>
+                    <!--Column Grid Splitter -->
+                    <controls:GridSplitter 
+                            Grid.Column="1"
+                            Grid.RowSpan="3"
+                            Width="11"
+                            ResizeBehavior="BasedOnAlignment"
+                            ResizeDirection="Columns"
+                            Background="Gray"
+                            Foreground="White" 
+                            FontSize="13">
+                        <controls:GridSplitter.Element>
+                            <Grid>
+                                <TextBlock HorizontalAlignment="Center" 
+                                   IsHitTestVisible="False"
+                                   VerticalAlignment="Center"  
+                                    Text="&#xE784;"
+                                   Foreground="Black" 
+                                   FontFamily="Segoe MDL2 Assets">
+                                </TextBlock>
+                            </Grid>
+                        </controls:GridSplitter.Element>
+                    </controls:GridSplitter>
+                    <TextBox x:Name="textboxResult" Grid.Column="0" Grid.Row="2" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" IsReadOnly="True" />
+                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" />
+                    <!--Row Grid Splitter-->
+                    <controls:GridSplitter 
+            Foreground="White"
+            Grid.Row="1"
+            ResizeBehavior="BasedOnAlignment"
+            ResizeDirection="Rows"
+            Background="Gray" Height="11"
+            HorizontalAlignment="Stretch" 
+            FontSize="13">
+                        <controls:GridSplitter.Element>
+                            <Grid>
+                                <TextBlock HorizontalAlignment="Center"     
+                                   IsHitTestVisible="False"
+                                   VerticalAlignment="Center"  
+                                    Text="&#xE76F;"
+                                   Foreground="Black" 
+                                   FontFamily="Segoe MDL2 Assets">
+                                </TextBlock>
+                            </Grid>
+                        </controls:GridSplitter.Element>
+                    </controls:GridSplitter>
+                </Grid>
+            </Frame>
+        </controls:HamburgerMenu>
+        <Grid Grid.Row="1" Margin="2" Padding="12,0" Background="DarkGray" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" x:Name="labelStatus" Text="" VerticalAlignment="Center"/>
+            <Button Grid.Column="2" Width="24" Content="-" Padding="0" Click="Button_Click"/>
+            <Slider x:Name="sliderFontSize" Grid.Column="3" Width="100" Value="{Binding TextControlFontSize, Mode=TwoWay}" Minimum="8" Maximum="76" Padding="6,0" />
+            <Button Grid.Column="4" Width="24" Content="+" Padding="0" Click="Button_Click_1"/>
+        </Grid>
+    </Grid>
+</Page>
