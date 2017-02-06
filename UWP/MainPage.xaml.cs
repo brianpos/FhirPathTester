@@ -42,7 +42,7 @@ namespace FhirPathTesterUWP
             this.InitializeComponent();
 
             TextControlFontSize = 22;
-            textboxInputXML.Text = "<Patient xmlns=\"http://hl7.org/fhir\">\r\n  <name>\r\n    <given value=\"brian\"/>\r\n  </name>\r\n  <birthDate value=\"1973\"/>\r\n</Patient>";
+            textboxInputXML.Text = "<Patient xmlns=\"http://hl7.org/fhir\">\r\n  <name>\r\n    <given value=\"brian\"/>\r\n  </name>\r\n  <birthDate value=\"1980\"/>\r\n</Patient>";
             textboxExpression.Text = "birthDate < today()";
             DataContext = this;
 
