@@ -14,7 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-using Hl7.ElementModel;
+using Hl7.Fhir.ElementModel;
 
 using fp2 = Hl7.Fhir.FhirPath;
 using f2 = Hl7.Fhir.Model;

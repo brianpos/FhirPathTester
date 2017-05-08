@@ -2,7 +2,7 @@
 // extern alias stu3;
 // https://github.com/dotnet/cli/issues/564
 
-using Hl7.ElementModel;
+using Hl7.Fhir.ElementModel;
 // using Hl7.Fhir.FluentPath;
 //using Hl7.Fhir.Model;
 using Hl7.FhirPath;
@@ -18,6 +18,7 @@ using s2 = Hl7.Fhir.Serialization;
 using fp3 = Hl7.Fhir.FhirPath;
 using f3 = Hl7.Fhir.Model;
 using s3 = Hl7.Fhir.Serialization;
+using Hl7.Fhir.Model.Primitives;
 
 namespace FhirPathTesterUWP
 {
