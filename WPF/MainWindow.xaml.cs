@@ -1,7 +1,7 @@
 ﻿extern alias dstu2;
 extern alias stu3;
 
-using Hl7.ElementModel;
+using Hl7.Fhir.ElementModel;
 
 using fp2 = dstu2.Hl7.Fhir.FhirPath;
 using f2 = dstu2.Hl7.Fhir.Model;

@@ -1,7 +1,8 @@
 ﻿extern alias dstu2;
 extern alias stu3;
 
-using Hl7.ElementModel;
+using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model.Primitives;
 // using Hl7.Fhir.FluentPath;
 //using Hl7.Fhir.Model;
 using Hl7.FhirPath;
@@ -154,11 +155,11 @@ namespace FhirPathTester
                             {
                                 if (i is stu3.Hl7.Fhir.FhirPath.PocoNavigator)
                                 {
-                                    return (i as stu3.Hl7.Fhir.FhirPath.PocoNavigator).Path;
+                                    return (i as stu3.Hl7.Fhir.FhirPath.PocoNavigator).Location;
                                 }
                                 if (i is dstu2.Hl7.Fhir.FhirPath.PocoNavigator)
                                 {
-                                    return (i as dstu2.Hl7.Fhir.FhirPath.PocoNavigator).Path;
+                                    return (i as dstu2.Hl7.Fhir.FhirPath.PocoNavigator).Location;
                                 }
                                 return "?";
                             }).ToArray();
