@@ -1,8 +1,9 @@
-﻿// extern alias dstu2;
-// extern alias stu3;
-// https://github.com/dotnet/cli/issues/564
+﻿extern alias dstu2;
+extern alias stu3;
+// https://github.com/NuGet/Home/issues/4989#issuecomment-311042085
 
 using Hl7.Fhir.ElementModel;
+using Hl7.Fhir.Model.Primitives;
 // using Hl7.Fhir.FluentPath;
 //using Hl7.Fhir.Model;
 using Hl7.FhirPath;
@@ -11,118 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using fp2 = Hl7.Fhir.FhirPath;
-using f2 = Hl7.Fhir.Model;
-using s2 = Hl7.Fhir.Serialization;
-
-using fp3 = Hl7.Fhir.FhirPath;
-using f3 = Hl7.Fhir.Model;
-using s3 = Hl7.Fhir.Serialization;
-using Hl7.Fhir.Model.Primitives;
-
 namespace FhirPathTesterUWP
 {
-    public static class CustomExtensions
-    {
-        public static IEnumerable<f2.Base> ToFhirValuesDSTU2(this IEnumerable<IElementNavigator> results)
-        {
-            return results.Select(r =>
-            {
-                if (r == null)
-                    return null;
-
-                if (r is fp2.PocoNavigator && (r as fp2.PocoNavigator).FhirValue != null)
-                {
-                    return ((fp2.PocoNavigator)r).FhirValue;
-                }
-                object result;
-                if (r.Value is Hl7.FhirPath.ConstantValue)
-                {
-                    result = (r.Value as Hl7.FhirPath.ConstantValue).Value;
-                }
-                else
-                {
-                    result = r.Value;
-                }
-
-                if (result is bool)
-                {
-                    return new f2.FhirBoolean((bool)result);
-                }
-                if (result is long)
-                {
-                    return new f2.Integer((int)(long)result);
-                }
-                if (result is decimal)
-                {
-                    return new f2.FhirDecimal((decimal)result);
-                }
-                if (result is string)
-                {
-                    return new f2.FhirString((string)result);
-                }
-                if (result is PartialDateTime)
-                {
-                    var dt = (PartialDateTime)result;
-                    return new f2.FhirDateTime(dt.ToUniversalTime());
-                }
-                else
-                {
-                    // This will throw an exception if the type isn't one of the FHIR types!
-                    return (f2.Base)result;
-                }
-            });
-        }
-        public static IEnumerable<f3.Base> ToFhirValuesSTU3(this IEnumerable<IElementNavigator> results)
-        {
-            return results.Select(r =>
-            {
-                if (r == null)
-                    return null;
-
-                if (r is fp3.PocoNavigator && (r as fp3.PocoNavigator).FhirValue != null)
-                {
-                    return ((fp3.PocoNavigator)r).FhirValue;
-                }
-                object result;
-                if (r.Value is Hl7.FhirPath.ConstantValue)
-                {
-                    result = (r.Value as Hl7.FhirPath.ConstantValue).Value;
-                }
-                else
-                {
-                    result = r.Value;
-                }
-
-                if (result is bool)
-                {
-                    return new f3.FhirBoolean((bool)result);
-                }
-                if (result is long)
-                {
-                    return new f3.Integer((int)(long)result);
-                }
-                if (result is decimal)
-                {
-                    return new f3.FhirDecimal((decimal)result);
-                }
-                if (result is string)
-                {
-                    return new f3.FhirString((string)result);
-                }
-                if (result is PartialDateTime)
-                {
-                    var dt = (PartialDateTime)result;
-                    return new f3.FhirDateTime(dt.ToUniversalTime());
-                }
-                else
-                {
-                    // This will throw an exception if the type isn't one of the FHIR types!
-                    return (f3.Base)result;
-                }
-            });
-        }
-    }
     public class CustomFluentPathFunctions
     {
         static private SymbolTable _st;
@@ -142,13 +33,13 @@ namespace FhirPathTesterUWP
                         {
                             object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
                             {
-                                if (i is fp3.PocoNavigator)
+                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp3.PocoNavigator).Name;
+                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).Name;
                                 }
-                                if (i is fp2.PocoNavigator)
+                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp2.PocoNavigator).Name;
+                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).Name;
                                 }
                                 return "?";
                             }).ToArray();
@@ -162,13 +53,13 @@ namespace FhirPathTesterUWP
                         {
                             object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
                             {
-                                if (i is fp3.PocoNavigator)
+                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp3.PocoNavigator).Path;
+                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).Location;
                                 }
-                                if (i is fp2.PocoNavigator)
+                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp2.PocoNavigator).Path;
+                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).Location;
                                 }
                                 return "?";
                             }).ToArray();
@@ -182,13 +73,13 @@ namespace FhirPathTesterUWP
                         {
                             object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
                             {
-                                if (i is fp3.PocoNavigator)
+                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp3.PocoNavigator).ShortPath;
+                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).ShortPath;
                                 }
-                                if (i is fp2.PocoNavigator)
+                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp2.PocoNavigator).ShortPath;
+                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).ShortPath;
                                 }
                                 return "?";
                             }).ToArray();
@@ -202,13 +93,13 @@ namespace FhirPathTesterUWP
                         {
                             object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
                             {
-                                if (i is fp3.PocoNavigator)
+                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp3.PocoNavigator).CommonPath;
+                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).CommonPath;
                                 }
-                                if (i is fp2.PocoNavigator)
+                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
                                 {
-                                    return (i as fp2.PocoNavigator).CommonPath;
+                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).CommonPath;
                                 }
                                 return "?";
                             }).ToArray();

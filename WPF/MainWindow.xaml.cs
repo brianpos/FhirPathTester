@@ -54,7 +54,7 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            var inputNav = new fp2.PocoNavigator(resource);
+            var inputNav = new dstu2.Hl7.Fhir.ElementModel.PocoNavigator(resource);
             return inputNav;
         }
         private IElementNavigator GetResourceNavigatorSTU3(out string parseErrors)
@@ -73,7 +73,7 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            var inputNav = new fp3.PocoNavigator(resource);
+            var inputNav = new stu3.Hl7.Fhir.ElementModel.PocoNavigator(resource);
             return inputNav;
         }
 
@@ -131,7 +131,10 @@ namespace FhirPathTester
             {
                 try
                 {
-                    prepopulatedValues = xps(inputNav, inputNav);
+                    if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
+                        prepopulatedValues = xps(inputNav, new fp3.FhirEvaluationContext(inputNav));
+                    else
+                        prepopulatedValues = xps(inputNav, new fp2.FhirEvaluationContext(inputNav));
                 }
                 catch (Exception ex)
                 {
@@ -145,9 +148,9 @@ namespace FhirPathTester
                 {
                     if (prepopulatedValues.Count() > 0)
                     {
-                        if (inputNav is fp3.PocoNavigator)
+                        if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
                         {
-                            foreach (var t2 in prepopulatedValues.ToFhirValuesSTU3())
+                            foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(prepopulatedValues))
                             {
                                 if (t2 != null)
                                 {
@@ -158,10 +161,9 @@ namespace FhirPathTester
                                 // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
                             }
                         }
-                        if (inputNav is fp2.PocoNavigator)
+                        else
                         {
-
-                            foreach (var t2 in prepopulatedValues.ToFhirValuesDSTU2())
+                            foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(prepopulatedValues))
                             {
                                 if (t2 != null)
                                 {

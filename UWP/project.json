@@ -1,14 +1,14 @@
 ﻿{
   "dependencies": {
-    "Hl7.Fhir.DSTU2": "0.92.1",
-    "Hl7.Fhir.STU3": "0.93.4",
-    "Hl7.FhirPath": "0.4.2",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.3.3",
-    "Microsoft.Toolkit.Uwp.UI": "1.4.1",
-    "Microsoft.Toolkit.Uwp.UI.Controls": "1.4.1"
+    "Hl7.Fhir.DSTU2": "0.92.5-beta7",
+    "Hl7.Fhir.STU3": "0.93.5-beta7",
+    "Hl7.FhirPath": "0.4.4-beta7",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.4.0",
+    "Microsoft.Toolkit.Uwp.UI": "2.0.0",
+    "Microsoft.Toolkit.Uwp.UI.Controls": "2.0.0"
   },
   "frameworks": {
-    "uap10.0": {}
+    "uap10.0.10586": {}
   },
   "runtimes": {
     "win10-arm": {},

@@ -1,34 +1,27 @@
-﻿using System;
+﻿extern alias dstu2;
+extern alias stu3;
+// https://github.com/NuGet/Home/issues/4989#issuecomment-311042085
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 using Hl7.Fhir.ElementModel;
 
-using fp2 = Hl7.Fhir.FhirPath;
-using f2 = Hl7.Fhir.Model;
-using s2 = Hl7.Fhir.Serialization;
+using fp2 = dstu2.Hl7.Fhir.FhirPath;
+using f2 = dstu2.Hl7.Fhir.Model;
+using s2 = dstu2.Hl7.Fhir.Serialization;
 
-using fp3 = Hl7.Fhir.FhirPath;
-using f3 = Hl7.Fhir.Model;
-using s3 = Hl7.Fhir.Serialization;
+using fp3 = stu3.Hl7.Fhir.FhirPath;
+using f3 = stu3.Hl7.Fhir.Model;
+using s3 = stu3.Hl7.Fhir.Serialization;
 
 using Hl7.FhirPath;
 using Hl7.FhirPath.Expressions;
 using System.Text;
-
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace FhirPathTesterUWP
 {
@@ -131,7 +124,7 @@ namespace FhirPathTesterUWP
                 return null;
             }
             parseErrors = null;
-            var inputNav = new fp2.PocoNavigator(resource);
+            var inputNav = new dstu2.Hl7.Fhir.ElementModel.PocoNavigator(resource);
             return inputNav;
         }
         private IElementNavigator GetResourceNavigatorSTU3(out string parseErrors)
@@ -150,7 +143,7 @@ namespace FhirPathTesterUWP
                 return null;
             }
             parseErrors = null;
-            var inputNav = new fp3.PocoNavigator(resource);
+            var inputNav = new stu3.Hl7.Fhir.ElementModel.PocoNavigator(resource);
             return inputNav;
         }
 
@@ -172,9 +165,9 @@ namespace FhirPathTesterUWP
                     textboxResult.Text += parseErrors3;
             }
 
-            //if (inputNavSTU3 != null)
-            //    labelSTU3.Visibility = Visibility.Visible;
-            //else
+            if (inputNavSTU3 != null)
+                labelSTU3.Visibility = Visibility.Visible;
+            else
                 labelSTU3.Visibility = Visibility.Collapsed;
             if (inputNavDSTU2 != null)
             {
@@ -208,7 +201,10 @@ namespace FhirPathTesterUWP
             {
                 try
                 {
-                    prepopulatedValues = xps(inputNav, inputNav);
+                    if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
+                        prepopulatedValues = xps(inputNav, new fp3.FhirEvaluationContext(inputNav));
+                    else
+                        prepopulatedValues = xps(inputNav, new fp2.FhirEvaluationContext(inputNav));
                 }
                 catch (Exception ex)
                 {
@@ -222,9 +218,9 @@ namespace FhirPathTesterUWP
                 {
                     if (prepopulatedValues.Count() > 0)
                     {
-                        if (inputNav is fp3.PocoNavigator)
+                        if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
                         {
-                            foreach (var t2 in prepopulatedValues.ToFhirValuesSTU3())
+                            foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(prepopulatedValues))
                             {
                                 if (t2 != null)
                                 {
@@ -235,10 +231,10 @@ namespace FhirPathTesterUWP
                                 // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
                             }
                         }
-                        else if (inputNav is fp2.PocoNavigator)
+                        else if (inputNav is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
                         {
 
-                            foreach (var t2 in prepopulatedValues.ToFhirValuesDSTU2())
+                            foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(prepopulatedValues))
                             {
                                 if (t2 != null)
                                 {
