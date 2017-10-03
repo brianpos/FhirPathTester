@@ -264,7 +264,11 @@ namespace FhirPathTester
             {
                 try
                 {
-                    var result = xps.Predicate(inputNav, inputNav);
+                    bool result;
+                    if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
+                        result = xps.Predicate(inputNav, new fp3.FhirEvaluationContext(inputNav));
+                    else
+                        result = xps.Predicate(inputNav, new fp2.FhirEvaluationContext(inputNav));
                     textboxResult.Text = result.ToString();
                 }
                 catch (Exception ex)
@@ -308,6 +312,23 @@ namespace FhirPathTester
         private void textboxInputXML_PreviewDragOver(object sender, DragEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void textboxInputXML_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            int lineIndex = 0;
+            int colIndex = 0;
+            try
+            {
+                int charIndex = textboxInputXML.CaretIndex;
+                lineIndex = textboxInputXML.GetLineIndexFromCharacterIndex(charIndex);
+                colIndex = charIndex - textboxInputXML.GetCharacterIndexFromLineIndex(lineIndex);
+            }
+            catch(Exception)
+            {
+            }
+            textboxRow.Content = $"Ln {lineIndex+1}";
+            textboxCol.Content = $"Col {colIndex}";
         }
     }
 }

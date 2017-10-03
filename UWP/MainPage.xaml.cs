@@ -335,7 +335,11 @@ namespace FhirPathTesterUWP
             {
                 try
                 {
-                    var result = xps.Predicate(inputNav, inputNav);
+                    bool result;
+                    if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
+                        result = xps.Predicate(inputNav, new fp3.FhirEvaluationContext(inputNav));
+                    else
+                        result = xps.Predicate(inputNav, new fp2.FhirEvaluationContext(inputNav));
                     textboxResult.Text = result.ToString();
                 }
                 catch (Exception ex)

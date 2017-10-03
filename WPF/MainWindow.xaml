@@ -40,10 +40,12 @@
                     <Label Grid.Column="2" x:Name="labelSTU3">STU3</Label>
                 </Grid>
                 <TextBox x:Name="textboxExpression" Grid.Row="1" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" MouseWheel="textboxExpression_MouseWheel" FontSize="{Binding Path=TextControlFontSize}" TextWrapping="Wrap"  TextAlignment="Left"></TextBox>
-                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
                     <Button Padding="8" Click="ButtonGo_Click">Extract</Button>
                     <Button Padding="8" Click="ButtonPredicate_Click">Validate</Button>
-                    <Label>Result</Label>
+                    <Label HorizontalAlignment="Stretch">Result</Label>
+                    <Label x:Name="textboxRow" HorizontalAlignment="Right">0</Label>
+                    <Label x:Name="textboxCol" HorizontalAlignment="Right">0</Label>
                 </StackPanel>
             </Grid>
 
@@ -62,7 +64,7 @@
             </Grid.RowDefinitions>
             <Label>Resource XML/Json
             </Label>
-            <TextBox Grid.Row="1" x:Name="textboxInputXML" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" HorizontalScrollBarVisibility="Auto" TextAlignment="Left" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" PreviewDragOver="textboxInputXML_PreviewDragOver"></TextBox>
+            <TextBox Grid.Row="1" x:Name="textboxInputXML" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" HorizontalScrollBarVisibility="Auto" TextAlignment="Left" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" PreviewDragOver="textboxInputXML_PreviewDragOver" SelectionChanged="textboxInputXML_SelectionChanged"></TextBox>
         </Grid>
     </Grid>
 </Window>
