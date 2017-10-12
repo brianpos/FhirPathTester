@@ -43,6 +43,7 @@
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
                     <Button Padding="8" Click="ButtonGo_Click">Extract</Button>
                     <Button Padding="8" Click="ButtonPredicate_Click">Validate</Button>
+                    <Button Padding="8" Click="ButtonCheckExpression_Click" >Parse</Button>
                     <Label HorizontalAlignment="Stretch">Result</Label>
                     <Label x:Name="textboxRow" HorizontalAlignment="Right">0</Label>
                     <Label x:Name="textboxCol" HorizontalAlignment="Right">0</Label>
@@ -50,11 +51,7 @@
             </Grid>
 
             <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="1" Height="6"/>
-            <TextBox x:Name="textboxResult" Grid.Row="2" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" IsReadOnly="True" TextWrapping="WrapWithOverflow" FontSize="{Binding Path=TextControlFontSize}" TextAlignment="Left">
-                <TextBox.Background>
-                    <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.InfoColorKey}}"/>
-                </TextBox.Background>
-            </TextBox>
+            <RichTextBox x:Name="textboxResult" Grid.Row="2" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" FontSize="{Binding Path=TextControlFontSize}" Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}" ToolTipService.ShowOnDisabled="True" IsDocumentEnabled="True" />
         </Grid>
         <GridSplitter x:Name="gridSplitter" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1" Width="6"/>
         <Grid Grid.Column="2">
