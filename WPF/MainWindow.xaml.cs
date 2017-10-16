@@ -152,28 +152,43 @@ namespace FhirPathTester
                     {
                         if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
                         {
-                            foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(prepopulatedValues))
+                            foreach (var item in prepopulatedValues)
                             {
-                                if (t2 != null)
+                                string tooltip = null;
+                                if (item is stu3.Hl7.Fhir.ElementModel.PocoNavigator pnav)
                                 {
-                                    // output the content as XML fragments
-                                    var fragment = stu3.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                    SetResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", "") + "\r\n");
+                                    tooltip = pnav.ShortPath;
                                 }
-                                // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
+                                foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new IElementNavigator[] { item }))
+                                {
+                                    if (t2 != null)
+                                    {
+                                        // output the content as XML fragments
+                                        var fragment = stu3.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                        AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""));
+                                    }
+                                    // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
+                                }
                             }
                         }
                         else
                         {
-                            foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(prepopulatedValues))
+                            foreach (var item in prepopulatedValues)
                             {
-                                if (t2 != null)
+                                string tooltip = null;
+                                if (item is dstu2.Hl7.Fhir.ElementModel.PocoNavigator pnav)
                                 {
-                                    // output the content as XML fragments
-                                    var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                    SetResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", "") + "\r\n");
+                                    tooltip = pnav.ShortPath;
                                 }
-                                // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
+                                foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(new IElementNavigator[] { item }))
+                                {
+                                    if (t2 != null)
+                                    {
+                                        // output the content as XML fragments
+                                        var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                        AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""), false, tooltip);
+                                    }
+                                }
                             }
                         }
                     }
