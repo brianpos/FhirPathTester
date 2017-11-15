@@ -472,8 +472,6 @@ namespace FhirPathTesterUWP
             var run = new Run() { Text = text };
             var para = new Paragraph();
             para.Inlines.Add(run);
-            //if (!string.IsNullOrEmpty(tooltip))
-            //    para.ToolTip = tooltip;
             para.Margin = new Thickness(2);
             textboxResult.Blocks.Add(para);
             if (error)
@@ -484,6 +482,17 @@ namespace FhirPathTesterUWP
             else
             {
                 para.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Black);
+            }
+            if (!string.IsNullOrEmpty(tooltip))
+            {
+                ToolTip tip = new ToolTip();
+                tip.Content = tooltip;
+                ToolTipService.SetToolTip(para, tip);
+
+                var run2 = new Run() { Text = " " + tooltip.Replace("\r\n", ", ") };
+                run2.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Gray);
+                run2.FontStyle = Windows.UI.Text.FontStyle.Italic;
+                para.Inlines.Add(run2);
             }
         }
 

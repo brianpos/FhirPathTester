@@ -25,7 +25,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <controls:HamburgerMenu PaneBackground="Black" Foreground="White" ItemTemplate="{StaticResource HamburDefaultTemplate}" x:Name="hamburgerMenuControl" Margin="0,5,0,-5">
+        <controls:HamburgerMenu PaneBackground="Black" Foreground="White" ItemTemplate="{StaticResource HamburDefaultTemplate}" x:Name="hamburgerMenuControl" Margin="0,0,0,0">
             <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                     <Grid.RowDefinitions>
@@ -44,7 +44,7 @@
                             <RowDefinition></RowDefinition>
                             <RowDefinition Height="auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" />
+                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" />
                         <StackPanel Grid.Row="1" Orientation="Horizontal" Background="DarkGray">
                             <Button Padding="8" Click="ButtonGo_Click">Extract</Button>
                             <Button Padding="8" Click="ButtonPredicate_Click">Validate</Button>
@@ -76,8 +76,10 @@
                             </Grid>
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
-                    <RichTextBlock x:Name="textboxResult" Grid.Column="0" Grid.Row="2" FontSize="{Binding TextControlFontSize, Mode=TwoWay}"  />
-                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" />
+                    <ScrollViewer Grid.Column="0" Grid.Row="2" >
+                        <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto"  />
+                    </ScrollViewer>
+                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     <!--Row Grid Splitter-->
                     <controls:GridSplitter 
             Foreground="White"
@@ -102,7 +104,7 @@
                 </Grid>
             </Frame>
         </controls:HamburgerMenu>
-        <Grid Grid.Row="1" Margin="2" Padding="12,0" Background="DarkGray" >
+        <Grid Grid.Row="1" Margin="0" Padding="12,0" Background="DarkGray" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
