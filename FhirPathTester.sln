@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26127.3
+VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FhirPathTester", "WPF\FhirPathTester.csproj", "{EB2E4288-28D4-407F-B019-CAAA763FA810}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FhirPathTesterUWP", "UWP\FhirPathTesterUWP.csproj", "{36DBDF82-1301-4C06-8BE1-1E4EE5DFAE70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FhirUserControls", "FhirUserControls\FhirUserControls.csproj", "{20FCEF54-3863-4A06-BD74-013392DB2746}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,22 @@ Global
 		{36DBDF82-1301-4C06-8BE1-1E4EE5DFAE70}.Release|x86.ActiveCfg = Release|x86
 		{36DBDF82-1301-4C06-8BE1-1E4EE5DFAE70}.Release|x86.Build.0 = Release|x86
 		{36DBDF82-1301-4C06-8BE1-1E4EE5DFAE70}.Release|x86.Deploy.0 = Release|x86
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|ARM.ActiveCfg = Debug|ARM
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|ARM.Build.0 = Debug|ARM
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|x64.ActiveCfg = Debug|x64
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|x64.Build.0 = Debug|x64
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|x86.ActiveCfg = Debug|x86
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Debug|x86.Build.0 = Debug|x86
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|ARM.ActiveCfg = Release|ARM
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|ARM.Build.0 = Release|ARM
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|x64.ActiveCfg = Release|x64
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|x64.Build.0 = Release|x64
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|x86.ActiveCfg = Release|x86
+		{20FCEF54-3863-4A06-BD74-013392DB2746}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -48,6 +48,7 @@
                         <StackPanel Grid.Row="1" Orientation="Horizontal" Background="DarkGray">
                             <Button Padding="8" Click="ButtonGo_Click">Extract</Button>
                             <Button Padding="8" Click="ButtonPredicate_Click">Validate</Button>
+                            <Button Padding="8" Click="ButtonCheckExpression_Click" >Parse</Button>
                             <TextBlock Grid.Column="1" x:Name="labelDSTU2" Padding="12,0,0,0" VerticalAlignment="Center">DSTU2</TextBlock>
                             <TextBlock Grid.Column="2" x:Name="labelSTU3" Padding="12,0,0,0" Visibility="Collapsed" VerticalAlignment="Center">STU3</TextBlock>
                             <!--<TextBlock VerticalAlignment="Center" Padding="12,0,0,0">Result</TextBlock>-->
@@ -75,7 +76,7 @@
                             </Grid>
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
-                    <TextBox x:Name="textboxResult" Grid.Column="0" Grid.Row="2" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" IsReadOnly="True" />
+                    <RichTextBlock x:Name="textboxResult" Grid.Column="0" Grid.Row="2" FontSize="{Binding TextControlFontSize, Mode=TwoWay}"  />
                     <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" />
                     <!--Row Grid Splitter-->
                     <controls:GridSplitter 

@@ -371,6 +371,20 @@ namespace FhirPathTester
                 try
                 {
                     ExpressionElementContext context = new ExpressionElementContext(inputNav.Name);
+                    if (inputNav is dstu2::Hl7.Fhir.ElementModel.PocoNavigator pn2)
+                    {
+                        if (pn2.FhirValue is f2.Questionnaire q)
+                        {
+                            context._q2 = q;
+                        }
+                    }
+                    else if (inputNav is stu3::Hl7.Fhir.ElementModel.PocoNavigator pn3)
+                    {
+                        if (pn3.FhirValue is f3.Questionnaire q)
+                        {
+                            context._q3 = q;
+                        }
+                    }
                     ResetResults();
                     CheckExpression(expr, "", context);
                 }
@@ -451,6 +465,13 @@ namespace FhirPathTester
                 _cm3 = new List<stu3.Hl7.Fhir.Introspection.ClassMapping>();
                 _cm2 = new List<dstu2.Hl7.Fhir.Introspection.ClassMapping>();
             }
+
+            // Questionnaire Context information when processing validation against a questionnaire
+            internal f2.Questionnaire _q2;
+            internal f3.Questionnaire _q3;
+            internal List<f2.Questionnaire.GroupComponent> _2gs;
+            internal List<f2.Questionnaire.QuestionComponent> _2qs;
+            internal List<f3.Questionnaire.ItemComponent> _3is;
 
             // Where this is the context of a class
             string _typeName;
@@ -664,6 +685,12 @@ namespace FhirPathTester
                         sb.Append($" {i2.Name}");
                     }
                 }
+                var groupLinkIds = _2gs?.Select(i => i.LinkId).ToArray();
+                var questionLinkIds = _2qs?.Select(i => i.LinkId).ToArray();
+                if (groupLinkIds != null)
+                    sb.Append($"\r\nGroup LinkIds: {String.Join(", ", groupLinkIds)}");
+                if (questionLinkIds != null)
+                    sb.Append($"\r\nQuestion LinkIds: {String.Join(", ", questionLinkIds)}");
                 return sb.ToString();
             }
         }
@@ -677,6 +704,47 @@ namespace FhirPathTester
                 var childContext = focusContext.Child(func.ChildName);
                 if (childContext != null)
                 {
+                    if (focusContext._q2 != null)
+                    {
+                        if (func.ChildName == "group")
+                        {
+                            childContext._2gs = new List<f2.Questionnaire.GroupComponent>();
+                            childContext._2gs.Add(focusContext._q2.Group);
+                        }
+                    }
+                    if (focusContext._2gs != null)
+                    {
+                        if (func.ChildName == "group")
+                        {
+                            childContext._2gs = new List<f2.Questionnaire.GroupComponent>();
+                            foreach (var item in focusContext._2gs)
+                            {
+                                if (item.Group != null)
+                                    childContext._2gs.AddRange(item.Group);
+                            }
+                        }
+                        else if (func.ChildName == "question")
+                        {
+                            childContext._2qs = new List<f2.Questionnaire.QuestionComponent>();
+                            foreach (var item in focusContext._2gs)
+                            {
+                                if (item.Question != null)
+                                    childContext._2qs.AddRange(item.Question);
+                            }
+                        }
+                    }
+                    if (focusContext._2qs != null)
+                    {
+                        if (func.ChildName == "group")
+                        {
+                            childContext._2gs = new List<f2.Questionnaire.GroupComponent>();
+                            foreach (var item in focusContext._2qs)
+                            {
+                                if (item.Group != null)
+                                    childContext._2gs.AddRange(item.Group);
+                            }
+                        }
+                    }
                     AppendResults($"{prefix}{func.ChildName}", false, childContext.Tooltip());
                     return childContext;
                 }
@@ -713,11 +781,54 @@ namespace FhirPathTester
                     argContextResult.RestrictToType(typeCast);
                     return argContextResult;
                 }
+                else if (func.FunctionName == "resolve")
+                {
+                    // need to check what the available outcomes of resolving this are, and switch types to this
+                }
                 else
                 {
-                    foreach (var item in func.Arguments)
+                    // if this is a where operation and the context inside is a linkId = , then check that the linkId is in context
+                    if (func.FunctionName == "where" && func.Arguments.Count() == 1 && (func.Arguments.First() as BinaryExpression)?.Op == "=")
                     {
-                        var argContextResult = CheckExpression(item, prefix + "    ", focusContext);
+                        var op = func.Arguments.First() as BinaryExpression;
+                        var argContextResult = CheckExpression(op, prefix + "    ", focusContext);
+
+                        // Filter the values that are not in this set
+                        focusContext._2gs = argContextResult._2gs;
+                        focusContext._2qs = argContextResult._2qs;
+                    }
+                    else
+                    {
+                        foreach (var item in func.Arguments)
+                        {
+                            var argContextResult = CheckExpression(item, prefix + "    ", focusContext);
+                        }
+                    }
+                    if (func.FunctionName == "binary.=")
+                    {
+                        ChildExpression prop = (ChildExpression)func.Arguments.Where(a => a is ChildExpression).FirstOrDefault();
+                        ConstantExpression value = (ConstantExpression)func.Arguments.Where(a => a is ConstantExpression).FirstOrDefault();
+                        if (prop?.ChildName == "linkId" && value != null)
+                        {
+                            var groupLinkIds = focusContext._2gs?.Select(i => i.LinkId).ToArray();
+                            var questionLinkIds = focusContext._2qs?.Select(i => i.LinkId).ToArray();
+
+                            // filter out all of the other linkIds from the list
+                            focusContext._2gs?.RemoveAll(g => g.LinkId != value.Value as string);
+                            focusContext._2qs?.RemoveAll(q => q.LinkId != value.Value as string);
+
+                            // Validate that there is an item with this value that is reachable
+                            if (focusContext._2gs?.Count() == 0 || focusContext._2qs?.Count() == 0)
+                            {
+                                // this linkId didn't exist in this context!
+                                string toolTip = "Available LinkIds:";
+                                if (groupLinkIds != null)
+                                    toolTip += $"\r\nGroup: {String.Join(", ", groupLinkIds)}";
+                                if (questionLinkIds != null)
+                                    toolTip += $"\r\nQuestion: {String.Join(", ", questionLinkIds)}";
+                                AppendResults($"{prefix}{func.FunctionName} LinkId is not valid in this context", true, toolTip);
+                            }
+                        }
                     }
                 }
 

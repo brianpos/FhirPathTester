@@ -165,3 +165,6 @@ build/runbuild.txt
 /.vs/config/applicationhost.config
 /UWP/BundleArtifacts
 /UWP/_pkginfo.txt
+.vs/
+FhirPathTesterXamarin/
+FhirUserControls/
