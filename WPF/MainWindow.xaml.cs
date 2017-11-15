@@ -341,10 +341,10 @@ namespace FhirPathTester
                 lineIndex = textboxInputXML.GetLineIndexFromCharacterIndex(charIndex);
                 colIndex = charIndex - textboxInputXML.GetCharacterIndexFromLineIndex(lineIndex);
             }
-            catch(Exception)
+            catch (Exception)
             {
             }
-            textboxRow.Content = $"Ln {lineIndex+1}";
+            textboxRow.Content = $"Ln {lineIndex + 1}";
             textboxCol.Content = $"Col {colIndex}";
         }
 
@@ -370,7 +370,6 @@ namespace FhirPathTester
             {
                 try
                 {
-                    bool result = true;
                     ExpressionElementContext context = new ExpressionElementContext(inputNav.Name);
                     ResetResults();
                     CheckExpression(expr, "", context);
@@ -427,7 +426,7 @@ namespace FhirPathTester
                     {
                         try
                         {
-                            _cm3 = new List<stu3.Hl7.Fhir.Introspection.ClassMapping>(){ stu3.Hl7.Fhir.Introspection.ClassMapping.Create(t3) };
+                            _cm3 = new List<stu3.Hl7.Fhir.Introspection.ClassMapping>() { stu3.Hl7.Fhir.Introspection.ClassMapping.Create(t3) };
                         }
                         catch
                         {
@@ -457,6 +456,11 @@ namespace FhirPathTester
             string _typeName;
             List<stu3.Hl7.Fhir.Introspection.ClassMapping> _cm3;
             List<dstu2.Hl7.Fhir.Introspection.ClassMapping> _cm2;
+
+            public string possibleTypes()
+            {
+                return string.Join(", ", _cm2.Select(t => "::" + t.Name).Union(_cm3.Select(t => "::" + t.Name)));
+            }
 
             bool IsMatchingPropName(string propertyName, stu3::Hl7.Fhir.Introspection.PropertyMapping pm)
             {
@@ -496,8 +500,8 @@ namespace FhirPathTester
                 return false;
             }
 
-            bool HasProperty(string propName, 
-                    out List<dstu2.Hl7.Fhir.Introspection.PropertyMapping> dstu2, 
+            bool HasProperty(string propName,
+                    out List<dstu2.Hl7.Fhir.Introspection.PropertyMapping> dstu2,
                     out List<stu3.Hl7.Fhir.Introspection.PropertyMapping> stu3)
             {
                 if (_cm3 == null)
@@ -560,7 +564,7 @@ namespace FhirPathTester
                             }
                             else
                             {
-                                if (item.ElementType !=typeof(string)) // (only occurs for extension.url and elementdefinition.id)
+                                if (item.ElementType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
                                     newContext._cm3.Add(stu3::Hl7.Fhir.Introspection.ClassMapping.Create(item.ElementType));
                             }
                         }
@@ -685,7 +689,7 @@ namespace FhirPathTester
             if (expr is FunctionCallExpression)
             {
                 var func = expr as FunctionCallExpression;
-                var funcs = _compiler.Symbols.Filter(func.FunctionName, func.Arguments.Count()+1);
+                var funcs = _compiler.Symbols.Filter(func.FunctionName, func.Arguments.Count() + 1);
                 if (funcs.Count() == 0 && !(expr is BinaryExpression))
                 {
                     AppendResults($"{prefix}{func.FunctionName} *invalid function name*", true);
