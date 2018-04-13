@@ -6,6 +6,12 @@ fhirpath expressions with DSTU2 and STU3 [HL7 FHIR][fhir-spec] resources.
 It can execute the expressions as either an extract (for use in search 
 expressions) or validate (for use in StructureDefinition constraints)
 
+New Features in v1.0.2:
+* Trial support for R4
+* Ability to convert/pretty print the source between XML/Json (click on the label you want to format the content to)
+* Custom fhirpath function LuhnTest()
+* Updated to recent HL7 FHIR NuGet packages 0.96.0
+
 Key features:
 * Evaluation [FhirPath][fhirpath-spec] expressions (extract/validate)
 * Parsing of the expression against the schema of the example resource type
