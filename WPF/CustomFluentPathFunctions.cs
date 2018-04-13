@@ -128,10 +128,37 @@ namespace FhirPathTester
                         PartialDateTime changedDate = PartialDateTime.Parse(PartialDateTime.FromDateTime(dto).ToString().Substring(0, f.ToString().Length));
                         return changedDate;
                     });
+
+                    // Custom LUHN Checksum algorithm
+                    // https://rosettacode.org/wiki/Luhn_test_of_credit_card_numbers#C.23
+                    _st.Add("LuhnTest", (string str) =>
+                    {
+                        return str.LuhnCheck();
+                    });
                 }
                 return _st;
             }
         }
 
+    }
+
+    public static class Luhn
+    {
+        public static bool LuhnCheck(this string cardNumber)
+        {
+            if (string.IsNullOrEmpty(cardNumber))
+                return true;
+            return LuhnCheck(cardNumber.Select(c => c - '0').ToArray());
+        }
+
+        private static bool LuhnCheck(this int[] digits)
+        {
+            return GetCheckValue(digits) == 0;
+        }
+
+        private static int GetCheckValue(int[] digits)
+        {
+            return digits.Select((d, i) => i % 2 == digits.Length % 2 ? ((2 * d) % 10) + d / 5 : d).Sum() % 10;
+        }
     }
 }
