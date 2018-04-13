@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FhirPathTester"
         mc:Ignorable="d"
-        Title="FHIRpath Tester DSTU2/STU3" Height="750" Width="1024">
+        Title="FHIRpath Tester DSTU2/STU3/R4" Height="750" Width="1024">
     <Window.Resources>
         <!--<Style TargetType="TextBox">
             <Setter x:Name="styleTextSize" Property="FontSize" Value="{Binding TextControlFontSize, Mode=TwoWay}"/>
@@ -34,10 +34,12 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <Label Grid.Column="0">Expression</Label>
                     <Label Grid.Column="1" x:Name="labelDSTU2">DSTU2</Label>
                     <Label Grid.Column="2" x:Name="labelSTU3">STU3</Label>
+                    <Label Grid.Column="3" x:Name="labelR4">R4</Label>
                 </Grid>
                 <TextBox x:Name="textboxExpression" Grid.Row="1" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" MouseWheel="textboxExpression_MouseWheel" FontSize="{Binding Path=TextControlFontSize}" TextWrapping="Wrap"  TextAlignment="Left"></TextBox>
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch">
@@ -59,8 +61,12 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Label>Resource XML/Json
-            </Label>
+            <StackPanel Orientation="Horizontal">
+                <Label>Resource</Label>
+                <Label x:Name="lblXML" MouseUp="lblXML_MouseUp" Padding="5,5,2,5" ScrollViewer.CanContentScroll="True">XML</Label>
+                <Label Padding="0,5">/</Label>
+                <Label x:Name="lblJson" MouseUp="lblJson_MouseUp" Padding="2,5,5,5">Json</Label>
+            </StackPanel>
             <TextBox Grid.Row="1" x:Name="textboxInputXML" HorizontalContentAlignment="Stretch" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" HorizontalScrollBarVisibility="Auto" TextAlignment="Left" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" PreviewDragOver="textboxInputXML_PreviewDragOver" SelectionChanged="textboxInputXML_SelectionChanged"></TextBox>
         </Grid>
     </Grid>
