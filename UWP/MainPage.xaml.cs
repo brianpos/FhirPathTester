@@ -1,5 +1,6 @@
 ﻿extern alias dstu2;
 extern alias stu3;
+extern alias r4;
 // https://github.com/NuGet/Home/issues/4989#issuecomment-311042085
 
 using System;
@@ -23,6 +24,7 @@ using Hl7.FhirPath;
 using Hl7.FhirPath.Expressions;
 using System.Text;
 using Windows.UI.Xaml.Documents;
+using FhirPathTester;
 
 namespace FhirPathTesterUWP
 {
