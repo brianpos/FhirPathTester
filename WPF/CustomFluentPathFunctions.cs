@@ -1,5 +1,6 @@
 ﻿extern alias dstu2;
 extern alias stu3;
+// https://github.com/NuGet/Home/issues/4989#issuecomment-311042085
 
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model.Primitives;
