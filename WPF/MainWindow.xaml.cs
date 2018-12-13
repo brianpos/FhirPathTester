@@ -197,6 +197,12 @@ namespace FhirPathTester
                                     {
                                         // output the content as XML fragments
                                         var fragment = stu3.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                        if (fragment.Length > 100)
+                                        {
+                                            // pretty print the content
+                                            var doc = System.Xml.Linq.XDocument.Parse(fragment);
+                                            fragment = doc.ToString(System.Xml.Linq.SaveOptions.None);
+                                        }
                                         AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""));
                                     }
                                     // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
@@ -218,6 +224,12 @@ namespace FhirPathTester
                                     {
                                         // output the content as XML fragments
                                         var fragment = r4.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                        if (fragment.Length > 100)
+                                        {
+                                            // pretty print the content
+                                            var doc = System.Xml.Linq.XDocument.Parse(fragment);
+                                            fragment = doc.ToString(System.Xml.Linq.SaveOptions.None);
+                                        }
                                         AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""));
                                     }
                                     // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
@@ -239,6 +251,12 @@ namespace FhirPathTester
                                     {
                                         // output the content as XML fragments
                                         var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                        if (fragment.Length > 100)
+                                        {
+                                            // pretty print the content
+                                            var doc = System.Xml.Linq.XDocument.Parse(fragment);
+                                            fragment = doc.ToString(System.Xml.Linq.SaveOptions.None);
+                                        }
                                         AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""), false, tooltip);
                                     }
                                 }
