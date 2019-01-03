@@ -65,7 +65,7 @@ I would gladly welcome any contributors!
 If you want to participate in this project, I'm using [Git Flow][nvie] for branch management, so please submit your commits using pull requests no on the develop branches mentioned above! 
 
 [fhirpath-spec]: http://hl7.org/fhirpath/
-[stu3-spec]: http://www.hl7.org/fhir
+[fhir-spec]: http://www.hl7.org/fhir
 [dstu2-spec]: http://hl7.org/fhir/DSTU2/index.html
 [netapi-zulip]: https://chat.fhir.org/#narrow/stream/dotnet
 [netapi-docu]: http://ewoutkramer.github.io/fhir-net-api/docu-index.html
@@ -76,5 +76,5 @@ If you want to participate in this project, I'm using [Git Flow][nvie] for branc
 - Or see: [Git workflow](https://www.atlassian.com/git/workflows#!workflow-gitflow)
 
 ## Licensing
-HL7®, FHIR® and the FHIR Mark® are trademarks owned by Health Level Seven International, 
+HL7Â®, FHIRÂ® and the FHIR MarkÂ® are trademarks owned by Health Level Seven International, 
 registered with the United States Patent and Trademark Office.
