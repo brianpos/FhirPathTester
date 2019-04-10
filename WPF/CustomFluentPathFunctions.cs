@@ -29,84 +29,64 @@ namespace FhirPathTester
                     // Custom function that returns the name of the property, rather than its value
                     _st.Add("propname", (object f) =>
                     {
-                        if (f is IEnumerable<IElementNavigator>)
+                        if (f is IEnumerable<ITypedElement>)
                         {
-                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
+                            object[] bits = (f as IEnumerable<ITypedElement>).Select(i =>
                             {
-                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
-                                {
-                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).Name;
-                                }
-                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
-                                {
-                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).Name;
-                                }
-                                return "?";
+                                return i.Name;
                             }).ToArray();
-                            return FhirValueList.Create(bits);
+                            return FhirValueListCreate(bits);
                         }
-                        return FhirValueList.Create(new object[] { "?" } );
+                        return FhirValueListCreate(new object[] { "?" } );
                     });
                     _st.Add("pathname", (object f) =>
                     {
-                        if (f is IEnumerable<IElementNavigator>)
+                        if (f is IEnumerable<ITypedElement>)
                         {
-                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
+                            object[] bits = (f as IEnumerable<ITypedElement>).Select(i =>
                             {
-                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
-                                {
-                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).Location;
-                                }
-                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
-                                {
-                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).Location;
-                                }
-                                return "?";
+                                return i.Location;
                             }).ToArray();
-                            return FhirValueList.Create(bits);
+                            return FhirValueListCreate(bits);
                         }
-                        return FhirValueList.Create(new object[] { "?" });
+                        return FhirValueListCreate(new object[] { "?" });
                     });
                     _st.Add("shortpathname", (object f) =>
                     {
-                        if (f is IEnumerable<IElementNavigator>)
+                        if (f is IEnumerable<ITypedElement>)
                         {
-                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
+                            object[] bits = (f as IEnumerable<ITypedElement>).Select(i =>
                             {
-                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
+                                if (i is IShortPathGenerator spg)
                                 {
-                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).ShortPath;
-                                }
-                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
-                                {
-                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).ShortPath;
+                                    return spg.ShortPath;
                                 }
                                 return "?";
                             }).ToArray();
-                            return FhirValueList.Create(bits);
+                            return FhirValueListCreate(bits);
                         }
-                        return FhirValueList.Create(new object[] { "?" });
+                        return FhirValueListCreate(new object[] { "?" });
                     });
-                    _st.Add("commonpathname", (object f) =>
-                    {
-                        if (f is IEnumerable<IElementNavigator>)
-                        {
-                            object[] bits = (f as IEnumerable<IElementNavigator>).Select(i =>
-                            {
-                                if (i is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
-                                {
-                                    return (i as stu3.Hl7.Fhir.ElementModel.PocoNavigator).CommonPath;
-                                }
-                                if (i is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
-                                {
-                                    return (i as dstu2.Hl7.Fhir.ElementModel.PocoNavigator).CommonPath;
-                                }
-                                return "?";
-                            }).ToArray();
-                            return FhirValueList.Create(bits);
-                        }
-                        return FhirValueList.Create(new object[] { "?" });
-                    });
+                    //_st.Add("commonpathname", (object f) =>
+                    //{
+                    //    if (f is IEnumerable<ITypedElement>)
+                    //    {
+                    //        object[] bits = (f as IEnumerable<ITypedElement>).Select(i =>
+                    //        {
+                    //            if (i is stu3.Hl7.Fhir.ElementModel.PocoElementNode)
+                    //            {
+                    //                return (i as stu3.Hl7.Fhir.ElementModel.PocoElementNode).CommonPath;
+                    //            }
+                    //            if (i is dstu2.Hl7.Fhir.ElementModel.PocoElementNode)
+                    //            {
+                    //                return (i as dstu2.Hl7.Fhir.ElementModel.PocoElementNode).CommonPath;
+                    //            }
+                    //            return "?";
+                    //        }).ToArray();
+                    //        return FhirValueListCreate(bits);
+                    //    }
+                    //    return FhirValueListCreate(new object[] { "?" });
+                    //});
 
                     // Custom function for evaluating the date operation (custom Healthconnex)
                     _st.Add("dateadd", (PartialDateTime f, string field, long amount) =>
@@ -141,6 +121,15 @@ namespace FhirPathTester
             }
         }
 
+        private static object FhirValueListCreate(object[] values)
+        {
+            // return FhirValueList.Create(values);
+            if (values != null)
+            {
+                return values.Select(value => value == null ? null : value is ITypedElement ? (ITypedElement)value : new ConstantValue(value));
+            }
+            return Enumerable.Empty<ITypedElement>();
+        }
     }
 
     public static class Luhn

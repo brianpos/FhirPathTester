@@ -655,8 +655,8 @@ namespace FhirPathTesterUWP
                             }
                             else
                             {
-                                if (item.ElementType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
-                                    newContext._cm3.Add(stu3::Hl7.Fhir.Introspection.ClassMapping.Create(item.ElementType));
+                                if (item.ImplementingType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
+                                    newContext._cm3.Add(stu3::Hl7.Fhir.Introspection.ClassMapping.Create(item.ImplementingType));
                             }
                         }
                         catch
@@ -704,8 +704,8 @@ namespace FhirPathTesterUWP
                             }
                             else
                             {
-                                if (item.ElementType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
-                                    newContext._cm2.Add(dstu2::Hl7.Fhir.Introspection.ClassMapping.Create(item.ElementType));
+                                if (item.ImplementingType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
+                                    newContext._cm2.Add(dstu2::Hl7.Fhir.Introspection.ClassMapping.Create(item.ImplementingType));
                             }
                         }
                         catch
