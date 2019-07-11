@@ -46,15 +46,15 @@ namespace FhirPathTester
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private IElementNavigator GetResourceNavigatorDSTU2(out string parseErrors)
+        private ITypedElement GetResourceNavigatorDSTU2(out string parseErrors)
         {
             f2.Resource resource = null;
             try
             {
                 if (textboxInputXML.Text.StartsWith("{"))
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f2.Resource>(textboxInputXML.Text);
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser(new dstu2.Hl7.Fhir.Serialization.ParserSettings() { PermissiveParsing = true }).Parse<f2.Resource>(textboxInputXML.Text);
                 else
-                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f2.Resource>(textboxInputXML.Text);
+                    resource = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser(new dstu2.Hl7.Fhir.Serialization.ParserSettings() { PermissiveParsing = true }).Parse<f2.Resource>(textboxInputXML.Text);
             }
             catch (Exception ex)
             {
@@ -62,18 +62,18 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            var inputNav = new dstu2.Hl7.Fhir.ElementModel.PocoNavigator(resource);
+            var inputNav = dstu2.Hl7.Fhir.ElementModel.PocoNavigatorExtensions.ToTypedElement(resource);
             return inputNav;
         }
-        private IElementNavigator GetResourceNavigatorSTU3(out string parseErrors)
+        private ITypedElement GetResourceNavigatorSTU3(out string parseErrors)
         {
             f3.Resource resource = null;
             try
             {
                 if (textboxInputXML.Text.StartsWith("{"))
-                    resource = new stu3.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f3.Resource>(textboxInputXML.Text);
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirJsonParser(new stu3.Hl7.Fhir.Serialization.ParserSettings() { PermissiveParsing = true }).Parse<f3.Resource>(textboxInputXML.Text);
                 else
-                    resource = new stu3.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f3.Resource>(textboxInputXML.Text);
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirXmlParser(new stu3.Hl7.Fhir.Serialization.ParserSettings() { PermissiveParsing = true }).Parse<f3.Resource>(textboxInputXML.Text);
             }
             catch (Exception ex)
             {
@@ -81,18 +81,18 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            var inputNav = new stu3.Hl7.Fhir.ElementModel.PocoNavigator(resource);
+            var inputNav = stu3.Hl7.Fhir.ElementModel.PocoNavigatorExtensions.ToTypedElement(resource);
             return inputNav;
         }
-        private IElementNavigator GetResourceNavigatorR4(out string parseErrors)
+        private ITypedElement GetResourceNavigatorR4(out string parseErrors)
         {
             f4.Resource resource = null;
             try
             {
                 if (textboxInputXML.Text.StartsWith("{"))
-                    resource = new r4.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f4.Resource>(textboxInputXML.Text);
+                    resource = new r4.Hl7.Fhir.Serialization.FhirJsonParser(new r4.Hl7.Fhir.Serialization.ParserSettings() {  }).Parse<f4.Resource>(textboxInputXML.Text);
                 else
-                    resource = new r4.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f4.Resource>(textboxInputXML.Text);
+                    resource = new r4.Hl7.Fhir.Serialization.FhirXmlParser(new r4.Hl7.Fhir.Serialization.ParserSettings() { }).Parse<f4.Resource>(textboxInputXML.Text);
             }
             catch (Exception ex)
             {
@@ -100,11 +100,11 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            var inputNav = new r4.Hl7.Fhir.ElementModel.PocoNavigator(resource);
+            var inputNav = r4.Hl7.Fhir.ElementModel.PocoNavigatorExtensions.ToTypedElement(resource);
             return inputNav;
         }
 
-        private IElementNavigator GetResourceNavigator()
+        private ITypedElement GetResourceNavigator(out EvaluationContext evalContext)
         {
             string parseErrors2;
             var inputNavDSTU2 = GetResourceNavigatorDSTU2(out parseErrors2);
@@ -134,15 +134,23 @@ namespace FhirPathTester
                 labelDSTU2.Visibility = Visibility.Collapsed;
 
             if (inputNavSTU3 != null)
+            {
+                evalContext = new fp3.FhirEvaluationContext(inputNavSTU3);
                 return inputNavSTU3;
+            }
             if (inputNavDSTU2 != null)
+            {
+                evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
                 return inputNavDSTU2;
+            }
+            evalContext = new fp4.FhirEvaluationContext(inputNavR4);
             return inputNavR4;
         }
 
         private void ButtonGo_Click(object sender, RoutedEventArgs e)
         {
-            var inputNav = GetResourceNavigator();
+            EvaluationContext evalContext;
+            var inputNav = GetResourceNavigator(out evalContext);
             if (inputNav == null)
                 return;
 
@@ -158,17 +166,12 @@ namespace FhirPathTester
                 return;
             }
 
-            IEnumerable<IElementNavigator> prepopulatedValues = null;
+            IEnumerable<ITypedElement> prepopulatedValues = null;
             if (xps != null)
             {
                 try
                 {
-                    if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
-                        prepopulatedValues = xps(inputNav, new fp3.FhirEvaluationContext(inputNav));
-                    else if (inputNav is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
-                        prepopulatedValues = xps(inputNav, new fp2.FhirEvaluationContext(inputNav));
-                    else
-                        prepopulatedValues = xps(inputNav, new fp4.FhirEvaluationContext(inputNav));
+                    prepopulatedValues = xps(inputNav, evalContext);
                 }
                 catch (Exception ex)
                 {
@@ -182,66 +185,39 @@ namespace FhirPathTester
                 {
                     if (prepopulatedValues.Count() > 0)
                     {
-                        if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
+                        foreach (var item in prepopulatedValues)
                         {
-                            foreach (var item in prepopulatedValues)
+                            string tooltip = item.Annotation<IShortPathGenerator>()?.ShortPath;
+                            if (item is stu3.Hl7.Fhir.ElementModel.IFhirValueProvider)
                             {
-                                string tooltip = null;
-                                if (item is stu3.Hl7.Fhir.ElementModel.PocoNavigator pnav)
+                                foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                                 {
-                                    tooltip = pnav.ShortPath;
-                                }
-                                foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new IElementNavigator[] { item }))
-                                {
-                                    if (t2 != null)
-                                    {
-                                        // output the content as XML fragments
-                                        var fragment = stu3.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                        AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""));
-                                    }
-                                    // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
+                                    // output the content as XML fragments
+                                    var fragment = stu3.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                    fragment = AppendXmlFramentResults(fragment);
                                 }
                             }
-                        }
-                        else if (inputNav is r4.Hl7.Fhir.ElementModel.PocoNavigator)
-                        {
-                            foreach (var item in prepopulatedValues)
+                            else if (item is dstu2.Hl7.Fhir.ElementModel.IFhirValueProvider)
                             {
-                                string tooltip = null;
-                                if (item is r4.Hl7.Fhir.ElementModel.PocoNavigator pnav)
+                                foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                                 {
-                                    tooltip = pnav.ShortPath;
-                                }
-                                foreach (var t2 in fp4.ElementNavFhirExtensions.ToFhirValues(new IElementNavigator[] { item }))
-                                {
-                                    if (t2 != null)
-                                    {
-                                        // output the content as XML fragments
-                                        var fragment = r4.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                        AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""));
-                                    }
-                                    // System.Diagnostics.Trace.WriteLine(string.Format("{0}: {1}", xpath.Value, t2.AsStringRepresentation()));
+                                    // output the content as XML fragments
+                                    var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                    fragment = AppendXmlFramentResults(fragment);
                                 }
                             }
-                        }
-                        else
-                        {
-                            foreach (var item in prepopulatedValues)
+                            else if (item is r4.Hl7.Fhir.ElementModel.IFhirValueProvider)
                             {
-                                string tooltip = null;
-                                if (item is dstu2.Hl7.Fhir.ElementModel.PocoNavigator pnav)
+                                foreach (var t2 in fp4.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                                 {
-                                    tooltip = pnav.ShortPath;
+                                    // output the content as XML fragments
+                                    var fragment = r4.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
+                                    fragment = AppendXmlFramentResults(fragment);
                                 }
-                                foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(new IElementNavigator[] { item }))
-                                {
-                                    if (t2 != null)
-                                    {
-                                        // output the content as XML fragments
-                                        var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                        AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""), false, tooltip);
-                                    }
-                                }
+                            }
+                            else if (item is ITypedElement te)
+                            {
+                                AppendResults($"<{te.InstanceType} value=\"{te.Value}\">");
                             }
                         }
                     }
@@ -254,6 +230,18 @@ namespace FhirPathTester
             }
 
             AppendParseTree();
+        }
+
+        private string AppendXmlFramentResults(string fragment)
+        {
+            if (fragment.Length > 100)
+            {
+                // pretty print the content
+                var doc = System.Xml.Linq.XDocument.Parse(fragment);
+                fragment = doc.ToString(System.Xml.Linq.SaveOptions.None);
+            }
+            AppendResults(fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""));
+            return fragment;
         }
 
         private void AppendParseTree()
@@ -314,7 +302,8 @@ namespace FhirPathTester
 
         private void ButtonPredicate_Click(object sender, RoutedEventArgs e)
         {
-            var inputNav = GetResourceNavigator();
+            EvaluationContext evalContext;
+            var inputNav = GetResourceNavigator(out evalContext);
             if (inputNav == null)
                 return;
 
@@ -334,13 +323,7 @@ namespace FhirPathTester
             {
                 try
                 {
-                    bool result;
-                    if (inputNav is stu3.Hl7.Fhir.ElementModel.PocoNavigator)
-                        result = xps.Predicate(inputNav, new fp3.FhirEvaluationContext(inputNav));
-                    else if (inputNav is dstu2.Hl7.Fhir.ElementModel.PocoNavigator)
-                        result = xps.Predicate(inputNav, new fp2.FhirEvaluationContext(inputNav));
-                    else
-                        result = xps.Predicate(inputNav, new fp4.FhirEvaluationContext(inputNav));
+                    bool result = xps.Predicate(inputNav, evalContext);
                     SetResults(result.ToString());
                 }
                 catch (Exception ex)
@@ -405,7 +388,8 @@ namespace FhirPathTester
 
         private void ButtonCheckExpression_Click(object sender, RoutedEventArgs e)
         {
-            var inputNav = GetResourceNavigator();
+            EvaluationContext evalContext;
+            var inputNav = GetResourceNavigator(out evalContext);
             if (inputNav == null)
                 return;
 
@@ -426,21 +410,21 @@ namespace FhirPathTester
                 try
                 {
                     ExpressionElementContext context = new ExpressionElementContext(inputNav.Name);
-                    if (inputNav is dstu2::Hl7.Fhir.ElementModel.PocoNavigator pn2)
+                    if (inputNav is dstu2::Hl7.Fhir.ElementModel.IFhirValueProvider pn2)
                     {
                         if (pn2.FhirValue is f2.Questionnaire q)
                         {
                             context._q2 = q;
                         }
                     }
-                    else if (inputNav is stu3::Hl7.Fhir.ElementModel.PocoNavigator pn3)
+                    else if (inputNav is stu3::Hl7.Fhir.ElementModel.IFhirValueProvider pn3)
                     {
                         if (pn3.FhirValue is f3.Questionnaire q)
                         {
                             context._q3 = q;
                         }
                     }
-                    else if (inputNav is r4::Hl7.Fhir.ElementModel.PocoNavigator pn4)
+                    else if (inputNav is r4::Hl7.Fhir.ElementModel.IFhirValueProvider pn4)
                     {
                         if (pn4.FhirValue is f4.Questionnaire q)
                         {
@@ -734,8 +718,8 @@ namespace FhirPathTester
                             }
                             else
                             {
-                                if (item.ElementType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
-                                    newContext._cm3.Add(stu3::Hl7.Fhir.Introspection.ClassMapping.Create(item.ElementType));
+                                if (item.ImplementingType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
+                                    newContext._cm3.Add(stu3::Hl7.Fhir.Introspection.ClassMapping.Create(item.ImplementingType));
                             }
                         }
                         catch
@@ -1110,7 +1094,7 @@ namespace FhirPathTester
                 var doc = JObject.Load(reader);
                 textboxInputXML.Text = doc.ToString(Formatting.Indented);
             }
-            catch (Exception ex3)
+            catch (Exception)
             {
                 f2.Resource resource2 = null;
                 try
@@ -1129,7 +1113,7 @@ namespace FhirPathTester
                     var doc = JObject.Load(reader);
                     textboxInputXML.Text = doc.ToString(Formatting.Indented);
                 }
-                catch (Exception ex2)
+                catch (Exception)
                 {
                     f4.Resource resource4 = null;
                     try
@@ -1148,7 +1132,7 @@ namespace FhirPathTester
                         var doc = JObject.Load(reader);
                         textboxInputXML.Text = doc.ToString(Formatting.Indented);
                     }
-                    catch (Exception ex4)
+                    catch (Exception)
                     {
                     }
                 }
