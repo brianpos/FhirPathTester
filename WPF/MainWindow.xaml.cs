@@ -187,7 +187,7 @@ namespace FhirPathTester
                     {
                         foreach (var item in prepopulatedValues)
                         {
-                            string tooltip = item.Annotation<IShortPathGenerator>().ShortPath;
+                            string tooltip = item.Annotation<IShortPathGenerator>()?.ShortPath;
                             if (item is stu3.Hl7.Fhir.ElementModel.IFhirValueProvider)
                             {
                                 foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
@@ -214,6 +214,10 @@ namespace FhirPathTester
                                     var fragment = r4.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
                                     fragment = AppendXmlFramentResults(fragment);
                                 }
+                            }
+                            else if (item is ITypedElement te)
+                            {
+                                AppendResults($"<{te.InstanceType} value=\"{te.Value}\">");
                             }
                         }
                     }
@@ -763,8 +767,8 @@ namespace FhirPathTester
                             }
                             else
                             {
-                                if (item.ImplementingType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
-                                    newContext._cm2.Add(dstu2::Hl7.Fhir.Introspection.ClassMapping.Create(item.ImplementingType));
+                                if (item.ElementType != typeof(string)) // (only occurs for extension.url and elementdefinition.id)
+                                    newContext._cm2.Add(dstu2::Hl7.Fhir.Introspection.ClassMapping.Create(item.ElementType));
                             }
                         }
                         catch

@@ -123,12 +123,7 @@ namespace FhirPathTester
 
         private static object FhirValueListCreate(object[] values)
         {
-            // return FhirValueList.Create(values);
-            if (values != null)
-            {
-                return values.Select(value => value == null ? null : value is ITypedElement ? (ITypedElement)value : new ConstantValue(value));
-            }
-            return Enumerable.Empty<ITypedElement>();
+            return ElementNode.CreateList(values);
         }
     }
 
