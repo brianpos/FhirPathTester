@@ -55,15 +55,15 @@ namespace FhirPathTester
                     {
                         if (f is IEnumerable<ITypedElement>)
                         {
-                            object[] bits = (f as IEnumerable<ITypedElement>).Select(i =>
+                            var bits = (f as IEnumerable<ITypedElement>).Select(i =>
                             {
                                 if (i is IShortPathGenerator spg)
                                 {
                                     return spg.ShortPath;
                                 }
                                 return "?";
-                            }).ToArray();
-                            return FhirValueListCreate(bits);
+                            });
+                            return ElementNode.CreateList(bits);
                         }
                         return FhirValueListCreate(new object[] { "?" });
                     });
