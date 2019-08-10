@@ -67,6 +67,42 @@ namespace FhirPathTester
                         }
                         return FhirValueListCreate(new object[] { "?" });
                     });
+                    _st.Add("DoubleMetaphone", (IEnumerable<ITypedElement> f) =>
+                    {
+                        var mp = new Phonix.DoubleMetaphone(10);
+                        return f.Select(it => it.Value as string)
+                            .Where(s => !string.IsNullOrEmpty(s))
+                            .SelectMany(s => System.Text.RegularExpressions.Regex.Split(s, @"\s+"))
+                            .SelectMany(word => ElementNode.CreateList(mp.BuildKey(word)) );
+                    });
+                    _st.Add("Metaphone", (IEnumerable<ITypedElement> f) =>
+                    {
+                        var mp = new Phonix.Metaphone(10);
+                        return f.Select(it => it.Value as string)
+                            .Where(s => !string.IsNullOrEmpty(s))
+                            .SelectMany(s => System.Text.RegularExpressions.Regex.Split(s, @"\s+"))
+                            .SelectMany(word => ElementNode.CreateList(mp.BuildKey(word)));
+                    });
+                    _st.Add("Stem", (IEnumerable<ITypedElement> f) =>
+                    {
+                        var stemmer = new Porter2Stemmer.EnglishPorter2Stemmer();
+                        return f.Select(it => it.Value as string)
+                            .Where(s => !string.IsNullOrEmpty(s))
+                            .SelectMany(s => System.Text.RegularExpressions.Regex.Split(s, @"\s+"))
+                            .SelectMany(word => ElementNode.CreateList(stemmer.Stem(word).Value));
+                    });
+                    _st.Add("Fuzzy", (IEnumerable<ITypedElement> f) =>
+                    {
+                        var stemmer = new Porter2Stemmer.EnglishPorter2Stemmer();
+                        var mp = new Phonix.DoubleMetaphone(10);
+                        return f.Select(it => it.Value as string)
+                            .Where(s => !string.IsNullOrEmpty(s))
+                            .Select(s => FuzzyTrim(s))
+                            .SelectMany(s => System.Text.RegularExpressions.Regex.Split(s, @"\s+"))
+                            .Take(4)
+                            .Select(word => stemmer.Stem(word).Value)
+                            .SelectMany(wordStem => ElementNode.CreateList(mp.BuildKey(wordStem)));
+                    });
                     //_st.Add("commonpathname", (object f) =>
                     //{
                     //    if (f is IEnumerable<ITypedElement>)
@@ -119,6 +155,15 @@ namespace FhirPathTester
                 }
                 return _st;
             }
+        }
+
+        static public string FuzzyTrim(string word)
+        {
+            if (string.IsNullOrEmpty(word))
+                return null;
+            return word.Replace("'", "").Replace("\"", "").Replace("`", "")
+                                        .Replace(",", " ").Replace("/", " ").Replace("-", " ").Replace(".", " ").Replace("~", " ").Replace("?", " ")
+                                        .Replace(";", " ").Replace("&", " ").Replace("*", " ").Replace("(", " ").Replace(")", " ").Replace("_", " ");
         }
 
         private static object FhirValueListCreate(object[] values)
