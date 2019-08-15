@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    mc:Ignorable="d">
+    mc:Ignorable="d" RequestedTheme="Default">
 
     <Page.Resources>
         <DataTemplate x:Name="HamburDefaultTemplate">
@@ -25,9 +25,9 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <NavigationView Foreground="White" MenuItemTemplate="{StaticResource HamburDefaultTemplate}" x:Name="hamburgerMenuControl" Margin="0,0,0,0">
+        <NavigationView Foreground="White" MenuItemTemplate="{StaticResource HamburDefaultTemplate}" x:Name="hamburgerMenuControl" Margin="0,0,0,0" ExpandedModeThresholdWidth="0" CompactModeThresholdWidth="0" OpenPaneLength="0" IsPaneOpen="False" IsBackButtonVisible="Collapsed" IsSettingsVisible="False" IsPaneVisible="False" IsPaneToggleButtonVisible="False">
             <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ToolTipService.ToolTip="Use the fhirpath expression above as though it is an invariant executing over the resource on the right (returns a boolean)">
                     <Grid.RowDefinitions>
                         <RowDefinition MinHeight="100"></RowDefinition>
                         <RowDefinition Height="11"></RowDefinition>
@@ -44,16 +44,20 @@
                             <RowDefinition></RowDefinition>
                             <RowDefinition Height="auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" />
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Background="DarkGray">
-                            <Button Padding="8" Click="ButtonGo_Click">Extract</Button>
-                            <Button Padding="8" Click="ButtonPredicate_Click">Validate</Button>
-                            <Button Padding="8" Click="ButtonCheckExpression_Click" >Parse</Button>
-                            <TextBlock Grid.Column="1" x:Name="labelDSTU2" Padding="12,0,0,0" VerticalAlignment="Center">DSTU2</TextBlock>
-                            <TextBlock Grid.Column="2" x:Name="labelSTU3" Padding="12,0,0,0" VerticalAlignment="Center">STU3</TextBlock>
-                            <TextBlock Grid.Column="2" x:Name="labelR4" Padding="12,0,0,0" VerticalAlignment="Center">R4</TextBlock>
-                            <!--<TextBlock VerticalAlignment="Center" Padding="12,0,0,0">Result</TextBlock>-->
-                        </StackPanel>
+                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"  />
+
+                        <CommandBar Grid.Row="1" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto">
+                            <AppBarButton Icon="Download" Label="Extract" Click="ButtonGo_Click" ToolTipService.ToolTip="Use the fhirpath expression above to extract the data from the resource on the right" />
+                            <AppBarButton Label="Validate" Click="ButtonPredicate_Click" Icon="Accept" />
+                            <AppBarButton Label="Parse" Click="ButtonCheckExpression_Click" ToolTipService.ToolTip="Simply parse the fhirpath expression above to determine if it is valid to run against the resource on the right"/>
+                            <AppBarSeparator/>
+                            <AppBarToggleButton x:Name="btnDSTU2" Label="DSTU2" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the DSTU2 parser"/>
+                            <AppBarToggleButton x:Name="btnSTU3" Label="STU3" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the STU3 parser"/>
+                            <AppBarToggleButton x:Name="btnR4" Label="R4" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the R4 parser"/>
+                            <AppBarSeparator/>
+                            <AppBarButton x:Name="btnXML" Label="xml" Click="BtnXML_Click" ToolTipService.ToolTip="Pretify the xml content (convert to xml if is in json)" />
+                            <AppBarButton x:Name="btnJson" Label="json" Click="BtnJson_Click" ToolTipService.ToolTip="Pretify the json content (convert to json if is in xml)" />
+                        </CommandBar>
                     </Grid>
                     <!--Column Grid Splitter -->
                     <controls:GridSplitter 
@@ -103,7 +107,7 @@
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
                 </Grid>
-            </Frame>            
+            </Frame>
         </NavigationView>
         <Grid Grid.Row="1" Margin="0" Padding="12,0" Background="DarkGray" >
             <Grid.ColumnDefinitions>

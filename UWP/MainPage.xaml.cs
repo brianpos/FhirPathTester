@@ -26,6 +26,11 @@ using Hl7.FhirPath.Expressions;
 using System.Text;
 using Windows.UI.Xaml.Documents;
 using FhirPathTester;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FhirPathTesterUWP
 {
@@ -79,7 +84,7 @@ namespace FhirPathTesterUWP
             //    Icon = Symbol.Setting,
             //    Name = "Settings"
             //});
-            hamburgerMenuControl.MenuItemsSource = items;
+            // hamburgerMenuControl.MenuItemsSource = items;
         }
 
         public class MenuItem
@@ -128,19 +133,19 @@ namespace FhirPathTesterUWP
             }
 
             if (inputNavR4 != null)
-                labelR4.Visibility = Visibility.Visible;
+                btnR4.Visibility = Visibility.Visible;
             else
-                labelR4.Visibility = Visibility.Collapsed;
+                btnR4.Visibility = Visibility.Collapsed;
 
             if (inputNavSTU3 != null)
-                labelSTU3.Visibility = Visibility.Visible;
+                btnSTU3.Visibility = Visibility.Visible;
             else
-                labelSTU3.Visibility = Visibility.Collapsed;
+                btnSTU3.Visibility = Visibility.Collapsed;
 
             if (inputNavDSTU2 != null)
-                labelDSTU2.Visibility = Visibility.Visible;
+                btnDSTU2.Visibility = Visibility.Visible;
             else
-                labelDSTU2.Visibility = Visibility.Collapsed;
+                btnDSTU2.Visibility = Visibility.Collapsed;
 
             if (inputNavSTU3 != null)
             {
@@ -345,15 +350,45 @@ namespace FhirPathTesterUWP
 
         private async void textboxInputXML_Drop(object sender, DragEventArgs e)
         {
-            // This is the place where we want to support the reading of the file from the file system
-            // to make the testing of other instances really easy
-            var formats = e.Data.GetView().AvailableFormats;
-            if (formats.Contains("FileName"))
+            try
             {
-                string[] contents = await e.Data.GetView().GetDataAsync("FileName") as string[];
-                if (contents.Length > 0)
-                    textboxInputXML.Text = System.IO.File.ReadAllText(contents[0]);
-                e.Handled = true;
+                // This is the place where we want to support the reading of the file from the file system
+                // to make the testing of other instances really easy
+                if (e.DataView != null)
+                {
+                    var formats = e.DataView.AvailableFormats;
+
+                    if (formats.Contains(StandardDataFormats.WebLink))
+                    {
+                        Uri webLink = await e.DataView.GetWebLinkAsync();
+                        if (!string.IsNullOrEmpty(webLink.OriginalString))
+                        {
+                            HttpClient client = new HttpClient();
+                            string contents = await client.GetStringAsync(webLink);
+                            textboxInputXML.Text = contents;
+                        }
+                        e.Handled = true;
+                        return;
+                    }
+
+                    if (formats.Contains(StandardDataFormats.StorageItems))
+                    {
+                        var items = await e.DataView.GetStorageItemsAsync();
+                        if (items.Count > 0)
+                        {
+                            if (items[0].IsOfType(StorageItemTypes.File))
+                            {
+                                string contents = await FileIO.ReadTextAsync((StorageFile)items[0]);
+                                textboxInputXML.Text = contents;
+                            }
+                        }
+                        e.Handled = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 
@@ -458,15 +493,30 @@ namespace FhirPathTesterUWP
             }
             if (!string.IsNullOrEmpty(tooltip))
             {
+                // try this one out sometime
+                // https://stackoverflow.com/questions/27649534/set-tooltip-on-range-of-text-in-wpf-richtextbox
                 ToolTip tip = new ToolTip();
                 tip.Content = tooltip;
                 ToolTipService.SetToolTip(para, tip);
+
+                //tooltopTemp.Content = tooltip;
+                //ToolTipService.SetToolTip(para, tooltopTemp);
 
                 var run2 = new Run() { Text = " " + tooltip.Replace("\r\n", ", ") };
                 run2.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Gray);
                 run2.FontStyle = Windows.UI.Text.FontStyle.Italic;
                 para.Inlines.Add(run2);
             }
+        }
+
+        private void BtnXML_Click(object sender, RoutedEventArgs e)
+        {
+            FhirPathProcessor.PretifyXML(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
+        }
+
+        private void BtnJson_Click(object sender, RoutedEventArgs e)
+        {
+            FhirPathProcessor.PretifyJson(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
         }
     }
 }
