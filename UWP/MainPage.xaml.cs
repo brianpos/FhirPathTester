@@ -518,5 +518,47 @@ namespace FhirPathTesterUWP
         {
             FhirPathProcessor.PretifyJson(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
         }
+
+        private void TextboxInputXML_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            CursorPosition(textboxInputXML, out int row, out int col);
+            labelStatus.Text = $"Ln {row} Col {col}";
+        }
+
+        /// <summary>
+        /// Returns the current column position on the current line the cursor is on.
+        /// </summary>
+        public static void CursorPosition(TextBox tb, out int row, out int col)
+        {
+            int endMarker = tb.SelectionStart;
+
+            if (endMarker == 0)
+            {
+                row = 1;
+                col = 1;
+                return;
+            }
+
+            int i = 0;
+            col = 1;
+            row = 1;
+
+            foreach (char c in tb.Text)
+            {
+                i++;
+                col++;
+
+                if (c == '\r')
+                {
+                    row++;
+                    col = 1;
+                }
+
+                if (i == endMarker)
+                {
+                    return;
+                }
+            }
+        }
     }
 }

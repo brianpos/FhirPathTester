@@ -84,7 +84,7 @@
                     <ScrollViewer Grid.Column="0" Grid.Row="2" >
                         <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto"  />
                     </ScrollViewer>
-                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" />
                     <!--Row Grid Splitter-->
                     <controls:GridSplitter 
             Foreground="White"
