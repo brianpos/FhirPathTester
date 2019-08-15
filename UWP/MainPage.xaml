@@ -27,7 +27,7 @@
         </Grid.RowDefinitions>
         <NavigationView Foreground="White" MenuItemTemplate="{StaticResource HamburDefaultTemplate}" x:Name="hamburgerMenuControl" Margin="0,0,0,0" ExpandedModeThresholdWidth="0" CompactModeThresholdWidth="0" OpenPaneLength="0" IsPaneOpen="False" IsBackButtonVisible="Collapsed" IsSettingsVisible="False" IsPaneVisible="False" IsPaneToggleButtonVisible="False">
             <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" ToolTipService.ToolTip="Use the fhirpath expression above as though it is an invariant executing over the resource on the right (returns a boolean)">
+                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
                     <Grid.RowDefinitions>
                         <RowDefinition MinHeight="100"></RowDefinition>
                         <RowDefinition Height="11"></RowDefinition>
@@ -44,12 +44,12 @@
                             <RowDefinition></RowDefinition>
                             <RowDefinition Height="auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"  />
+                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression"  />
 
                         <CommandBar Grid.Row="1" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto">
                             <AppBarButton Icon="Download" Label="Extract" Click="ButtonGo_Click" ToolTipService.ToolTip="Use the fhirpath expression above to extract the data from the resource on the right" />
-                            <AppBarButton Label="Validate" Click="ButtonPredicate_Click" Icon="Accept" />
-                            <AppBarButton Label="Parse" Click="ButtonCheckExpression_Click" ToolTipService.ToolTip="Simply parse the fhirpath expression above to determine if it is valid to run against the resource on the right"/>
+                            <AppBarButton Label="Validate" Click="ButtonPredicate_Click" Icon="Accept" ToolTipService.ToolTip="Use the fhirpath expression above as though it is an invariant executing over the resource on the right (returns a boolean)" />
+                            <AppBarButton Label="Parse" Click="ButtonCheckExpression_Click" ToolTipService.ToolTip="Parse the fhirpath expression above to determine if it is valid to run against the resource on the right"/>
                             <AppBarSeparator/>
                             <AppBarToggleButton x:Name="btnDSTU2" Label="DSTU2" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the DSTU2 parser"/>
                             <AppBarToggleButton x:Name="btnSTU3" Label="STU3" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the STU3 parser"/>
@@ -84,7 +84,7 @@
                     <ScrollViewer Grid.Column="0" Grid.Row="2" >
                         <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto"  />
                     </ScrollViewer>
-                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" />
+                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json" />
                     <!--Row Grid Splitter-->
                     <controls:GridSplitter 
             Foreground="White"
