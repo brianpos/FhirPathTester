@@ -17,6 +17,8 @@ using Hl7.FhirPath.Expressions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace FhirPathTester
 {
@@ -82,7 +84,7 @@ namespace FhirPathTester
             return inputNav;
         }
 
-        public static void CheckExpression(ITypedElement inputNav, Hl7.FhirPath.Expressions.Expression expr, Action<string, bool, string> AppendResults,Action ResetResults)
+        public static void CheckExpression(ITypedElement inputNav, Hl7.FhirPath.Expressions.Expression expr, Action<string, bool, string> AppendResults, Action ResetResults)
         {
             ExpressionElementContext context = new ExpressionElementContext(inputNav.Name);
             if (inputNav is dstu2::Hl7.Fhir.ElementModel.IFhirValueProvider pn2)
@@ -272,6 +274,126 @@ namespace FhirPathTester
             }
             AppendResults(expr.GetType().ToString(), false, null);
             return context;
+        }
+
+        public static void PretifyXML(string text, Action<string> setText)
+        {
+            // prettify the XML (and convert to XML if it wasn't already)
+            f3.Resource resource = null;
+            string contentAsXML;
+            try
+            {
+                if (text.StartsWith("{"))
+                {
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f3.Resource>(text);
+                    contentAsXML = new stu3.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource);
+                }
+                else
+                    contentAsXML = text;
+                var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
+                setText(doc.ToString(System.Xml.Linq.SaveOptions.None));
+            }
+            catch (Exception ex3)
+            {
+                f2.Resource resource2 = null;
+                try
+                {
+                    if (text.StartsWith("{"))
+                    {
+                        resource2 = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f2.Resource>(text);
+                        contentAsXML = new dstu2.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource2);
+                    }
+                    else
+                        contentAsXML = text;
+                    var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
+                    setText(doc.ToString(System.Xml.Linq.SaveOptions.None));
+                }
+                catch (Exception ex2)
+                {
+                    f4.Resource resource4 = null;
+                    try
+                    {
+                        if (text.StartsWith("{"))
+                        {
+                            resource4 = new r4.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f4.Resource>(text);
+                            contentAsXML = new r4.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource4);
+                        }
+                        else
+                            contentAsXML = text;
+                        var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
+                        setText(doc.ToString(System.Xml.Linq.SaveOptions.None));
+                    }
+                    catch (Exception ex4)
+                    {
+                    }
+                }
+            }
+        }
+
+        public static void PretifyJson(string text, Action<string> setText)
+        {
+            // prettify the Json (and convert to Json if it wasn't already)
+            f3.Resource resource = null;
+            string contentAsJson;
+            try
+            {
+                if (text.StartsWith("{"))
+                {
+                    contentAsJson = text;
+                }
+                else
+                {
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f3.Resource>(text);
+                    contentAsJson = new stu3.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource);
+                }
+                var sr = new System.IO.StringReader(contentAsJson);
+                var reader = new JsonTextReader(sr);
+                var doc = JObject.Load(reader);
+                setText(doc.ToString(Formatting.Indented));
+            }
+            catch (Exception)
+            {
+                f2.Resource resource2 = null;
+                try
+                {
+                    if (text.StartsWith("{"))
+                    {
+                        contentAsJson = text;
+                    }
+                    else
+                    {
+                        resource2 = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f2.Resource>(text);
+                        contentAsJson = new dstu2.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource2);
+                    }
+                    var sr = new System.IO.StringReader(contentAsJson);
+                    var reader = new JsonTextReader(sr);
+                    var doc = JObject.Load(reader);
+                    setText(doc.ToString(Formatting.Indented));
+                }
+                catch (Exception)
+                {
+                    f4.Resource resource4 = null;
+                    try
+                    {
+                        if (text.StartsWith("{"))
+                        {
+                            contentAsJson = text;
+                        }
+                        else
+                        {
+                            resource4 = new r4.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f4.Resource>(text);
+                            contentAsJson = new r4.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource4);
+                        }
+                        var sr = new System.IO.StringReader(contentAsJson);
+                        var reader = new JsonTextReader(sr);
+                        var doc = JObject.Load(reader);
+                        setText(doc.ToString(Formatting.Indented));
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
         }
     }
 

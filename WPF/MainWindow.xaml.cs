@@ -393,123 +393,12 @@ namespace FhirPathTester
 
         private void lblXML_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            // prettify the XML (and convert to XML if it wasn't already)
-            f3.Resource resource = null;
-            string contentAsXML;
-            try
-            {
-                if (textboxInputXML.Text.StartsWith("{"))
-                {
-                    resource = new stu3.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f3.Resource>(textboxInputXML.Text);
-                    contentAsXML = new stu3.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource);
-                }
-                else
-                    contentAsXML = textboxInputXML.Text;
-                var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
-                textboxInputXML.Text = doc.ToString(System.Xml.Linq.SaveOptions.None);
-
-            }
-            catch (Exception ex3)
-            {
-                f2.Resource resource2 = null;
-                try
-                {
-                    if (textboxInputXML.Text.StartsWith("{"))
-                    {
-                        resource2 = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f2.Resource>(textboxInputXML.Text);
-                        contentAsXML = new dstu2.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource2);
-                    }
-                    else
-                        contentAsXML = textboxInputXML.Text;
-                    var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
-                    textboxInputXML.Text = doc.ToString(System.Xml.Linq.SaveOptions.None);
-                }
-                catch (Exception ex2)
-                {
-                    f4.Resource resource4 = null;
-                    try
-                    {
-                        if (textboxInputXML.Text.StartsWith("{"))
-                        {
-                            resource4 = new r4.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f4.Resource>(textboxInputXML.Text);
-                            contentAsXML = new r4.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource4);
-                        }
-                        else
-                            contentAsXML = textboxInputXML.Text;
-                        var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
-                        textboxInputXML.Text = doc.ToString(System.Xml.Linq.SaveOptions.None);
-                    }
-                    catch (Exception ex4)
-                    {
-                    }
-                }
-            }
+            FhirPathProcessor.PretifyXML(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
         }
 
         private void lblJson_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            // prettify the Json (and convert to Json if it wasn't already)
-            f3.Resource resource = null;
-            string contentAsJson;
-            try
-            {
-                if (textboxInputXML.Text.StartsWith("{"))
-                {
-                    contentAsJson = textboxInputXML.Text;
-                }
-                else
-                {
-                    resource = new stu3.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f3.Resource>(textboxInputXML.Text);
-                    contentAsJson = new stu3.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource);
-                }
-                var sr = new System.IO.StringReader(contentAsJson);
-                var reader = new JsonTextReader(sr);
-                var doc = JObject.Load(reader);
-                textboxInputXML.Text = doc.ToString(Formatting.Indented);
-            }
-            catch (Exception)
-            {
-                f2.Resource resource2 = null;
-                try
-                {
-                    if (textboxInputXML.Text.StartsWith("{"))
-                    {
-                        contentAsJson = textboxInputXML.Text;
-                    }
-                    else
-                    {
-                        resource2 = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f2.Resource>(textboxInputXML.Text);
-                        contentAsJson = new dstu2.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource2);
-                    }
-                    var sr = new System.IO.StringReader(contentAsJson);
-                    var reader = new JsonTextReader(sr);
-                    var doc = JObject.Load(reader);
-                    textboxInputXML.Text = doc.ToString(Formatting.Indented);
-                }
-                catch (Exception)
-                {
-                    f4.Resource resource4 = null;
-                    try
-                    {
-                        if (textboxInputXML.Text.StartsWith("{"))
-                        {
-                            contentAsJson = textboxInputXML.Text;
-                        }
-                        else
-                        {
-                            resource4 = new r4.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f4.Resource>(textboxInputXML.Text);
-                            contentAsJson = new r4.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource4);
-                        }
-                        var sr = new System.IO.StringReader(contentAsJson);
-                        var reader = new JsonTextReader(sr);
-                        var doc = JObject.Load(reader);
-                        textboxInputXML.Text = doc.ToString(Formatting.Indented);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-            }
+            FhirPathProcessor.PretifyJson(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
         }
     }
 }
