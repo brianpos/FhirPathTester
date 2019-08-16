@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    mc:Ignorable="d" RequestedTheme="Default">
+    mc:Ignorable="d" RequestedTheme="Default" Loaded="Page_Loaded">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -99,7 +99,7 @@
                             </Grid>
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
-                    <ListView Visibility="Collapsed" Padding="12" x:Name="listHistory" Grid.RowSpan="3" ItemsSource="{Binding Path=HistoryItems, Mode=OneWay}" ItemClick="ListHistory_ItemClick" IsItemClickEnabled="True" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <ListView Grid.Column="0" Visibility="Collapsed" Padding="12" x:Name="listHistory" Grid.RowSpan="3" ItemsSource="{Binding Path=HistoryItems, Mode=OneWay}" ItemClick="ListHistory_ItemClick" IsItemClickEnabled="True" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Padding="0,0,0,6">
@@ -110,7 +110,9 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <controls:MarkdownTextBlock Padding="12" Visibility="Collapsed" x:Name="markdownAboutBox" Grid.RowSpan="3" Text="## FhirpathTester" ></controls:MarkdownTextBlock>
+                    <ScrollViewer Grid.Column="0" Grid.RowSpan="3"  >
+                        <controls:MarkdownTextBlock Padding="12" Visibility="Collapsed" x:Name="markdownAboutBox" Text="Loading ..." ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    </ScrollViewer>
                 </Grid>
             </Frame>
         </NavigationView>

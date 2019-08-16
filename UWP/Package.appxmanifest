@@ -4,11 +4,11 @@
          xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" 
          xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
          IgnorableNamespaces="uap mp">
-  <Identity Name="3775d1ae-d258-4fa1-b71b-a3d49a003d60" Publisher="CN=bpostlethwaite" Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="3775d1ae-d258-4fa1-b71b-a3d49a003d60" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="28271Phone7onmymind.fhirpathtester" Publisher="CN=D4BBCF0A-BDD3-48F5-9390-1575A696F90B" Version="1.1.8.0" />
+  <mp:PhoneIdentity PhoneProductId="0750e24a-f141-4525-b1b1-7d896dde70b9" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>FhirPath Tester</DisplayName>
-    <PublisherDisplayName>bpostlethwaite</PublisherDisplayName>
+    <DisplayName>fhirpath tester</DisplayName>
+    <PublisherDisplayName>brianpos.com</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -19,7 +19,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="FhirPathTesterUWP.App" desktop4:SupportsMultipleInstances="true">
-      <uap:VisualElements DisplayName="FhirPath Tester" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="FhirPath Tester" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="fhirpath tester" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="FhirPath Tester" BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />

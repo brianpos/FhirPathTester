@@ -32,6 +32,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
+using Windows.ApplicationModel;
 
 namespace FhirPathTesterUWP
 {
@@ -565,6 +566,12 @@ namespace FhirPathTesterUWP
                 markdownAboutBox.Visibility = Visibility.Visible;
             else
                 markdownAboutBox.Visibility = Visibility.Collapsed;
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            string initalMarkdownText = await FileIO.ReadTextAsync(await Package.Current.InstalledLocation.GetFileAsync("about.md"));
+            markdownAboutBox.Text = initalMarkdownText;
         }
     }
 }
