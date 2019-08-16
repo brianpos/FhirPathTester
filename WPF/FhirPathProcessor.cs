@@ -777,4 +777,21 @@ namespace FhirPathTester
         }
     }
 
+    public class HistoryItemDetails
+    {
+        public HistoryItemDetails()
+        {
+        }
+        public HistoryItemDetails(string resourceContent, string expression)
+        {
+            Expression = expression;
+            ResourceContent = resourceContent;
+            Stored = DateTime.Now;
+            Header = String.Join("\n", resourceContent.Split(new[] { '\n', '\r' }).Take(4));
+        }
+        public string Expression { get; set; }
+        public string ResourceContent { get; set; }
+        public DateTime Stored { get; set; }
+        public string Header { get; set; }
+    }
 }

@@ -8,24 +8,17 @@
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d" RequestedTheme="Default">
 
-    <Page.Resources>
-        <DataTemplate x:Name="HamburDefaultTemplate">
-            <Grid Width="240" Height="48">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="48" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <SymbolIcon Grid.Column="0" Symbol="{Binding Icon}" Foreground="White" />
-                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="16" VerticalAlignment="Center" Foreground="White" />
-            </Grid>
-        </DataTemplate>
-    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <NavigationView Foreground="White" MenuItemTemplate="{StaticResource HamburDefaultTemplate}" x:Name="hamburgerMenuControl" Margin="0,0,0,0" ExpandedModeThresholdWidth="0" CompactModeThresholdWidth="0" OpenPaneLength="0" IsPaneOpen="False" IsBackButtonVisible="Collapsed" IsSettingsVisible="False" IsPaneVisible="False" IsPaneToggleButtonVisible="False">
+        <NavigationView x:Name="hamburgerMenuControl" IsPaneOpen="False" IsBackButtonVisible="Collapsed" IsSettingsVisible="False"  ItemInvoked="HamburgerMenuControl_ItemInvoked" ExpandedModeThresholdWidth="4000" CompactModeThresholdWidth="0">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Icon="Home" Content="Home" Tag="Home" />
+                <NavigationViewItem Icon="Clock" Content="History" Tag="History" />
+                <NavigationViewItem Icon="Help" Content="About" Tag="About" />
+            </NavigationView.MenuItems>
             <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
                     <Grid.RowDefinitions>
@@ -106,6 +99,18 @@
                             </Grid>
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
+                    <ListView Visibility="Collapsed" Padding="12" x:Name="listHistory" Grid.RowSpan="3" ItemsSource="{Binding Path=HistoryItems, Mode=OneWay}" ItemClick="ListHistory_ItemClick" IsItemClickEnabled="True" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Padding="0,0,0,6">
+                                    <TextBlock Text="{Binding Path=Stored}"></TextBlock>
+                                    <TextBlock Text="{Binding Path=Expression}"></TextBlock>
+                                    <TextBlock Margin="12,0,0,0" Text="{Binding Path=Header}" FontWeight="ExtraLight"></TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <controls:MarkdownTextBlock Padding="12" Visibility="Collapsed" x:Name="markdownAboutBox" Grid.RowSpan="3" Text="## FhirpathTester" ></controls:MarkdownTextBlock>
                 </Grid>
             </Frame>
         </NavigationView>

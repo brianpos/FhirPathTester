@@ -31,6 +31,7 @@ using Windows.Storage;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Collections.ObjectModel;
 
 namespace FhirPathTesterUWP
 {
@@ -48,59 +49,16 @@ namespace FhirPathTesterUWP
             textboxExpression.Text = "birthDate < today()";
             DataContext = this;
 
-            var items = new List<MenuItem>();
-            //items.Add(new MenuItem()
-            //{
-            //    Icon = Symbol.Accept,
-            //    Name = "Accept"
-            //});
-            //items.Add(new MenuItem()
-            //{
-            //    Icon = Symbol.OutlineStar,
-            //    Name = "Favourites"
-            //});
-            //items.Add(new MenuItem()
-            //{
-            //    Icon = Symbol.Calendar,
-            //    Name = "Calendar"
-            //});
-            //items.Add(new MenuItem()
-            //{
-            //    Icon = Symbol.Bookmarks,
-            //    Name = "Bookmarks"
-            //});
-            items.Add(new MenuItem()
-            {
-                Icon = Symbol.Home,
-                Name = "Home"
-            });
-            //items.Add(new MenuItem()
-            //{
-            //    Icon = Symbol.Clock,
-            //    Name = "History"
-            //});
-            //items.Add(new MenuItem()
-            //{
-            //    Icon = Symbol.Setting,
-            //    Name = "Settings"
-            //});
-            // hamburgerMenuControl.MenuItemsSource = items;
+            // and remember the initial state
+            AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
         }
 
-        public class MenuItem
-        {
-            public Symbol Icon
-            {
-                get;
-                set;
-            }
-            public string Name
-            {
-                get;
-                set;
-            }
-        }
-
+        public ObservableCollection<HistoryItemDetails> HistoryItems { get; set; }
+            = new ObservableCollection<HistoryItemDetails>();
+        //{
+        //    new Tuple<string, string, string>($"{DateTime.Now.ToString()}", "<Patient xmlns=\"http://hl7.org/fhir\">\r\n  <name>\r\n    <given value=\"brian\"/>\r\n  </name>\r\n  <birthDate value=\"1980\"/>\r\n</Patient>", ""),
+        //    new Tuple<string, string, string>($"{DateTime.Now.ToString()}", "<Patient xmlns=\"http://hl7.org/fhir\">\r\n  <name>\r\n    <given value=\"allen\"/>\r\n  </name>\r\n  <birthDate value=\"1964\"/>\r\n</Patient>", "")
+        //};
         private int _size;
         public int TextControlFontSize
         {
@@ -195,6 +153,8 @@ namespace FhirPathTesterUWP
                 }
 
                 ResetResults();
+                AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
+
                 try
                 {
                     if (prepopulatedValues.Count() > 0)
@@ -244,6 +204,21 @@ namespace FhirPathTesterUWP
             }
 
             AppendParseTree();
+        }
+
+        private void AddHistoryEntry(string content, string expression)
+        {
+            if (HistoryItems.Count > 0)
+            {
+                // check to see if the content has changed
+                var lastEntry = HistoryItems[0];
+                if (lastEntry.ResourceContent == content && lastEntry.Expression == expression)
+                    return; // (no need to add a new entry)
+            }
+            HistoryItems.Insert(0, new HistoryItemDetails(content, expression));
+            // trim the history to only 100 items
+            while (HistoryItems.Count > 100)
+                HistoryItems.Remove(HistoryItems.Last());
         }
 
         private string AppendXmlFramentResults(string fragment, string tooltip)
@@ -335,6 +310,7 @@ namespace FhirPathTesterUWP
             {
                 try
                 {
+                    AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
                     bool result = xps.Predicate(inputNav, evalContext);
                     SetResults(result.ToString());
                 }
@@ -364,8 +340,14 @@ namespace FhirPathTesterUWP
                         if (!string.IsNullOrEmpty(webLink.OriginalString))
                         {
                             HttpClient client = new HttpClient();
-                            string contents = await client.GetStringAsync(webLink);
+                            var response = await client.GetAsync(webLink);
+                            string contents = await response.Content.ReadAsStringAsync();
                             textboxInputXML.Text = contents;
+                            if (response.Content.Headers.ContentType.MediaType.Contains("xml"))
+                                FhirPathProcessor.PretifyXML(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
+                            if (response.Content.Headers.ContentType.MediaType.Contains("json"))
+                                FhirPathProcessor.PretifyJson(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
+                            AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
                         }
                         e.Handled = true;
                         return;
@@ -380,6 +362,7 @@ namespace FhirPathTesterUWP
                             {
                                 string contents = await FileIO.ReadTextAsync((StorageFile)items[0]);
                                 textboxInputXML.Text = contents;
+                                AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
                             }
                         }
                         e.Handled = true;
@@ -559,6 +542,29 @@ namespace FhirPathTesterUWP
                     return;
                 }
             }
+        }
+
+        private void ListHistory_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // read the value from the list item
+            var item = e.ClickedItem as HistoryItemDetails;
+            if (!string.IsNullOrEmpty(item.ResourceContent))
+                textboxInputXML.Text = item.ResourceContent;
+            if (!string.IsNullOrEmpty(item.Expression))
+                textboxExpression.Text = item.Expression;
+        }
+
+        private void HamburgerMenuControl_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        {
+            var item = args.InvokedItem as string;
+            if (item == "History")
+                listHistory.Visibility = Visibility.Visible;
+            else
+                listHistory.Visibility = Visibility.Collapsed;
+            if (item == "About")
+                markdownAboutBox.Visibility = Visibility.Visible;
+            else
+                markdownAboutBox.Visibility = Visibility.Collapsed;
         }
     }
 }
