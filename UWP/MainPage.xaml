@@ -6,8 +6,161 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-    mc:Ignorable="d" RequestedTheme="Default" Loaded="Page_Loaded">
-
+    mc:Ignorable="d" Loaded="Page_Loaded">
+    <Page.Resources>
+        <Style x:Key="TextBoxStyleBlack" TargetType="TextBox">
+            <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}"/>
+            <Setter Property="MinHeight" Value="{ThemeResource TextControlThemeMinHeight}"/>
+            <Setter Property="Foreground" Value="{ThemeResource SystemControlForegroundBaseHighBrush}"/>
+            <Setter Property="Background" Value="{ThemeResource SystemControlBackgroundAltHighBrush}"/>
+            <Setter Property="BorderBrush" Value="{ThemeResource SystemControlForegroundChromeDisabledLowBrush}"/>
+            <Setter Property="SelectionHighlightColor" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
+            <Setter Property="BorderThickness" Value="{ThemeResource TextControlBorderThemeThickness}"/>
+            <Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}"/>
+            <Setter Property="FontSize" Value="{ThemeResource ControlContentThemeFontSize}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollMode" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
+            <Setter Property="ScrollViewer.IsDeferredScrollingEnabled" Value="False"/>
+            <Setter Property="Padding" Value="{ThemeResource TextControlThemePadding}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Grid.Resources>
+                                <Style x:Name="DeleteButtonStyle" TargetType="Button">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Grid x:Name="ButtonLayoutGrid" BorderBrush="{ThemeResource TextBoxButtonBorderThemeBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{ThemeResource TextBoxButtonBackgroundThemeBrush}">
+                                                    <VisualStateManager.VisualStateGroups>
+                                                        <VisualStateGroup x:Name="CommonStates">
+                                                            <VisualState x:Name="Normal"/>
+                                                            <VisualState x:Name="PointerOver">
+                                                                <Storyboard>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="GlyphElement">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                            <VisualState x:Name="Pressed">
+                                                                <Storyboard>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="ButtonLayoutGrid">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="GlyphElement">
+                                                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAltChromeWhiteBrush}"/>
+                                                                    </ObjectAnimationUsingKeyFrames>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                            <VisualState x:Name="Disabled">
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Duration="0" To="0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="ButtonLayoutGrid"/>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                    </VisualStateManager.VisualStateGroups>
+                                                    <TextBlock x:Name="GlyphElement" AutomationProperties.AccessibilityView="Raw" Foreground="{ThemeResource SystemControlForegroundChromeBlackMediumBrush}" FontStyle="Normal" FontSize="12" FontFamily="{ThemeResource SymbolThemeFontFamily}" HorizontalAlignment="Center" Text="&#xE10A;" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="HeaderContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseMediumLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="BackgroundElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledTransparentBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="BorderElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlBackgroundBaseLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="BorderElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="PlaceholderTextContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="BorderElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightChromeAltLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="BackgroundElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundHoverOpacity}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Focused">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="PlaceholderTextContentPresenter">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlPageTextChromeBlackMediumLowBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="BackgroundElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="BackgroundElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource TextControlBackgroundFocusedOpacity}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="BorderBrush" Storyboard.TargetName="BorderElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlHighlightAccentBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ApplicationForegroundThemeBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="RequestedTheme" Storyboard.TargetName="ContentElement">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="Light"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="ButtonStates">
+                                    <VisualState x:Name="ButtonVisible">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="DeleteButton">
+                                                <DiscreteObjectKeyFrame KeyTime="0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <Visibility>Visible</Visibility>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="ButtonCollapsed"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="BackgroundElement" Background="{TemplateBinding Background}" Grid.ColumnSpan="2" Margin="{TemplateBinding BorderThickness}" Opacity="{ThemeResource TextControlBackgroundRestOpacity}" Grid.Row="1" Grid.RowSpan="1"/>
+                            <Border x:Name="BorderElement" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="1"/>
+                            <ContentPresenter x:Name="HeaderContentPresenter" Grid.ColumnSpan="2" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Foreground="{ThemeResource SystemControlForegroundBaseHighBrush}" FontWeight="Normal" Margin="0,0,0,8" Grid.Row="0" Visibility="Collapsed" x:DeferLoadStrategy="Lazy"/>
+                            <ScrollViewer x:Name="ContentElement" AutomationProperties.AccessibilityView="Raw" HorizontalScrollMode="{TemplateBinding ScrollViewer.HorizontalScrollMode}" HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}" IsTabStop="False" IsHorizontalRailEnabled="{TemplateBinding ScrollViewer.IsHorizontalRailEnabled}" IsVerticalRailEnabled="{TemplateBinding ScrollViewer.IsVerticalRailEnabled}" IsDeferredScrollingEnabled="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Grid.Row="1" VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}" VerticalScrollMode="{TemplateBinding ScrollViewer.VerticalScrollMode}" ZoomMode="Disabled"/>
+                            <ContentControl x:Name="PlaceholderTextContentPresenter" Grid.ColumnSpan="2" Content="{TemplateBinding PlaceholderText}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}" IsHitTestVisible="False" IsTabStop="False" Margin="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Grid.Row="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+                            <Button x:Name="DeleteButton" BorderThickness="{TemplateBinding BorderThickness}" Grid.Column="1" FontSize="{TemplateBinding FontSize}" IsTabStop="False" Margin="{ThemeResource HelperButtonThemePadding}" MinWidth="34" Grid.Row="1" Style="{StaticResource DeleteButtonStyle}" Visibility="Collapsed" VerticalAlignment="Stretch" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -22,26 +175,34 @@
             <Frame x:Name="contentFrame" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
                     <Grid.RowDefinitions>
-                        <RowDefinition MinHeight="100"></RowDefinition>
-                        <RowDefinition Height="11"></RowDefinition>
-                        <RowDefinition></RowDefinition>
+                        <RowDefinition MinHeight="100"/>
+                        <RowDefinition Height="11"/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition MinWidth="200"></ColumnDefinition>
-                        <ColumnDefinition Width="11"></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition MinWidth="200"/>
+                        <ColumnDefinition Width="11"/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.Column="0" Grid.Row="0">
                         <Grid.RowDefinitions>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" />
+                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
 
                         <CommandBar Grid.Row="1" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto">
-                            <AppBarButton Icon="Download" Label="Extract" Click="ButtonGo_Click" ToolTipService.ToolTip="Use the fhirpath expression above to extract the data from the resource on the right" />
-                            <AppBarButton Label="Validate" Click="ButtonPredicate_Click" Icon="Accept" ToolTipService.ToolTip="Use the fhirpath expression above as though it is an invariant executing over the resource on the right (returns a boolean)" />
+                            <AppBarButton Icon="Download" Label="Extract" Click="ButtonGo_Click" AccessKey="E" ToolTipService.ToolTip="Use the fhirpath expression above to extract the data from the resource on the right (Ctrl+E)" >
+                                <AppBarButton.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control" Key="E"/>
+                                </AppBarButton.KeyboardAccelerators>
+                            </AppBarButton>
+                            <AppBarButton Label="Validate" Click="ButtonPredicate_Click" Icon="Accept" ToolTipService.ToolTip="Use the fhirpath expression above as though it is an invariant executing over the resource on the right (returns a boolean)  (Ctrl+T)">
+                                <AppBarButton.KeyboardAccelerators>
+                                    <KeyboardAccelerator Modifiers="Control" Key="T"/>
+                                </AppBarButton.KeyboardAccelerators>
+                            </AppBarButton>
                             <AppBarButton Label="Parse" Click="ButtonCheckExpression_Click" ToolTipService.ToolTip="Parse the fhirpath expression above to determine if it is valid to run against the resource on the right"/>
                             <AppBarSeparator/>
                             <AppBarToggleButton x:Name="btnDSTU2" Label="DSTU2" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the DSTU2 parser"/>
@@ -69,15 +230,14 @@
                                    VerticalAlignment="Center"  
                                     Text="&#xE784;"
                                    Foreground="Black" 
-                                   FontFamily="Segoe MDL2 Assets">
-                                </TextBlock>
+                                   FontFamily="Segoe MDL2 Assets"/>
                             </Grid>
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
                     <ScrollViewer Grid.Column="0" Grid.Row="2" >
                         <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto"  />
                     </ScrollViewer>
-                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json"  IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" />
+                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json"  IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
                     <!--Row Grid Splitter-->
                     <controls:GridSplitter 
             Foreground="White"
@@ -94,24 +254,23 @@
                                    VerticalAlignment="Center"  
                                     Text="&#xE76F;"
                                    Foreground="Black" 
-                                   FontFamily="Segoe MDL2 Assets">
-                                </TextBlock>
+                                   FontFamily="Segoe MDL2 Assets"/>
                             </Grid>
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
-                    <ListView Grid.Column="0" Visibility="Collapsed" Padding="12" x:Name="listHistory" Grid.RowSpan="3" ItemsSource="{Binding Path=HistoryItems, Mode=OneWay}" ItemClick="ListHistory_ItemClick" IsItemClickEnabled="True" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                    <ListView Grid.Column="0" Visibility="Collapsed" Padding="12" x:Name="listHistory" Grid.RowSpan="3" ItemsSource="{Binding HistoryItems, Mode=OneWay}" ItemClick="ListHistory_ItemClick" IsItemClickEnabled="True" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Padding="0,0,0,6">
-                                    <TextBlock Text="{Binding Path=Stored}"></TextBlock>
-                                    <TextBlock Text="{Binding Path=Expression}"></TextBlock>
-                                    <TextBlock Margin="12,0,0,0" Text="{Binding Path=Header}" FontWeight="ExtraLight"></TextBlock>
+                                    <TextBlock Text="{Binding Stored}"/>
+                                    <TextBlock Text="{Binding Expression}"/>
+                                    <TextBlock Margin="12,0,0,0" Text="{Binding Header}" FontWeight="ExtraLight"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
                     <ScrollViewer x:Name="markdownHost" Visibility="Collapsed" Grid.Column="0" Grid.RowSpan="3"  >
-                        <controls:MarkdownTextBlock RequestedTheme="Dark" Padding="12" x:Name="markdownAboutBox" Text="Loading ..." ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                        <controls:MarkdownTextBlock Padding="12" x:Name="markdownAboutBox" Text="Loading ..." ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     </ScrollViewer>
                 </Grid>
             </Frame>

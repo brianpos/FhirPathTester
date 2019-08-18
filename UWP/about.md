@@ -13,6 +13,8 @@ New Features in v1.0.8:
 * Custom fhirpath function LuhnTest()
 * Updated to recent HL7 FHIR NuGet packages 1.3.0
 * Drag and drop example resource files from the web! (not, does not support authentication to the FHIR Server)
+* Hotkeys Ctrl+E and Ctrl+T to the execute and validate buttons
+* Supports the Dark system theme
 
 Key features:
 
