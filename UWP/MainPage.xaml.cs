@@ -454,10 +454,6 @@ namespace FhirPathTesterUWP
                 para.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red);
                 para.FontWeight = Windows.UI.Text.FontWeights.Bold;
             }
-            else
-            {
-                para.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Black);
-            }
         }
         private void AppendResults(string text, bool error = false, string tooltip = null)
         {
@@ -470,10 +466,6 @@ namespace FhirPathTesterUWP
             {
                 para.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Red);
                 para.FontWeight = Windows.UI.Text.FontWeights.Bold;
-            }
-            else
-            {
-                para.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Black);
             }
             if (!string.IsNullOrEmpty(tooltip))
             {
