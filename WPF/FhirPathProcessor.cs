@@ -84,6 +84,48 @@ namespace FhirPathTester
             return inputNav;
         }
 
+        public static void ProcessPrepopulatedValues(IEnumerable<ITypedElement> prepopulatedValues, Func<string, string, string> AppendXmlFramentResults, Action<string, bool, string> AppendResults)
+        {
+            if (prepopulatedValues.Count() > 0)
+            {
+                foreach (var item in prepopulatedValues)
+                {
+                    string tooltip = item.Annotation<IShortPathGenerator>()?.ShortPath;
+                    if (item is stu3.Hl7.Fhir.ElementModel.IFhirValueProvider)
+                    {
+                        foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
+                        {
+                            // output the content as XML fragments
+                            var fragment = new stu3.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName);
+                            fragment = AppendXmlFramentResults(fragment, tooltip);
+                        }
+                    }
+                    else if (item is dstu2.Hl7.Fhir.ElementModel.IFhirValueProvider)
+                    {
+                        foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
+                        {
+                            // output the content as XML fragments
+                            var fragment = new dstu2.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName);
+                            fragment = AppendXmlFramentResults(fragment, tooltip);
+                        }
+                    }
+                    else if (item is r4.Hl7.Fhir.ElementModel.IFhirValueProvider)
+                    {
+                        foreach (var t2 in fp4.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
+                        {
+                            // output the content as XML fragments
+                            var fragment = new r4.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName);
+                            fragment = AppendXmlFramentResults(fragment, tooltip);
+                        }
+                    }
+                    else if (item is ITypedElement te)
+                    {
+                        AppendResults($"<{te.InstanceType} value=\"{te.Value}\">", false, null);
+                    }
+                }
+            }
+        }
+
         public static void CheckExpression(ITypedElement inputNav, Hl7.FhirPath.Expressions.Expression expr, Action<string, bool, string> AppendResults, Action ResetResults)
         {
             ExpressionElementContext context = new ExpressionElementContext(inputNav.Name);
@@ -121,12 +163,53 @@ namespace FhirPathTester
                 var childContext = focusContext.Child(func.ChildName);
                 if (childContext != null)
                 {
+                    if (focusContext._q4 != null)
+                    {
+                        if (func.ChildName == "item")
+                        {
+                            childContext._4is = new List<f4.Questionnaire.ItemComponent>();
+                            childContext._4is.AddRange(focusContext._q4.Item);
+                        }
+                    }
+                    if (focusContext._q3 != null)
+                    {
+                        if (func.ChildName == "item")
+                        {
+                            childContext._3is = new List<f3.Questionnaire.ItemComponent>();
+                            childContext._3is.AddRange(focusContext._q3.Item);
+                        }
+                    }
                     if (focusContext._q2 != null)
                     {
                         if (func.ChildName == "group")
                         {
                             childContext._2gs = new List<f2.Questionnaire.GroupComponent>();
                             childContext._2gs.Add(focusContext._q2.Group);
+                        }
+                    }
+
+                    if (focusContext._4is != null)
+                    {
+                        if (func.ChildName == "item")
+                        {
+                            childContext._4is = new List<f4.Questionnaire.ItemComponent>();
+                            foreach (var item in focusContext._4is)
+                            {
+                                if (item.Item != null)
+                                    childContext._4is.AddRange(item.Item);
+                            }
+                        }
+                    }
+                    if (focusContext._3is != null)
+                    {
+                        if (func.ChildName == "item")
+                        {
+                            childContext._3is = new List<f3.Questionnaire.ItemComponent>();
+                            foreach (var item in focusContext._3is)
+                            {
+                                if (item.Item != null)
+                                    childContext._3is.AddRange(item.Item);
+                            }
                         }
                     }
                     if (focusContext._2gs != null)
@@ -211,6 +294,8 @@ namespace FhirPathTester
                         var argContextResult = CheckExpression(op, prefix + "    ", focusContext, AppendResults);
 
                         // Filter the values that are not in this set
+                        focusContext._4is = argContextResult._4is;
+                        focusContext._3is = argContextResult._3is;
                         focusContext._2gs = argContextResult._2gs;
                         focusContext._2qs = argContextResult._2qs;
                     }
@@ -229,8 +314,12 @@ namespace FhirPathTester
                         {
                             var groupLinkIds = focusContext._2gs?.Select(i => i.LinkId).ToArray();
                             var questionLinkIds = focusContext._2qs?.Select(i => i.LinkId).ToArray();
+                            var item4Ids = focusContext._4is?.Select(i => i.LinkId).ToArray();
+                            var item3Ids = focusContext._3is?.Select(i => i.LinkId).ToArray();
 
                             // filter out all of the other linkIds from the list
+                            focusContext._4is?.RemoveAll(i => i.LinkId != value.Value as string);
+                            focusContext._3is?.RemoveAll(i => i.LinkId != value.Value as string);
                             focusContext._2gs?.RemoveAll(g => g.LinkId != value.Value as string);
                             focusContext._2qs?.RemoveAll(q => q.LinkId != value.Value as string);
 
@@ -243,6 +332,22 @@ namespace FhirPathTester
                                     toolTip += $"\r\nGroup: {String.Join(", ", groupLinkIds)}";
                                 if (questionLinkIds != null)
                                     toolTip += $"\r\nQuestion: {String.Join(", ", questionLinkIds)}";
+                                AppendResults($"{prefix}{func.FunctionName} LinkId is not valid in this context", true, toolTip);
+                            }
+                            if (focusContext._3is?.Count() == 0)
+                            {
+                                // this linkId didn't exist in this context!
+                                string toolTip = "Available LinkIds:";
+                                if (item3Ids != null)
+                                    toolTip += $"\r\nItems: {String.Join(", ", item3Ids)}";
+                                AppendResults($"{prefix}{func.FunctionName} LinkId is not valid in this context", true, toolTip);
+                            }
+                            if (focusContext._4is?.Count() == 0)
+                            {
+                                // this linkId didn't exist in this context!
+                                string toolTip = "Available LinkIds:";
+                                if (item4Ids != null)
+                                    toolTip += $"\r\nItems: {String.Join(", ", item4Ids)}";
                                 AppendResults($"{prefix}{func.FunctionName} LinkId is not valid in this context", true, toolTip);
                             }
                         }

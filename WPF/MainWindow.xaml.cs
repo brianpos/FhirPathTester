@@ -125,44 +125,7 @@ namespace FhirPathTester
                 ResetResults();
                 try
                 {
-                    if (prepopulatedValues.Count() > 0)
-                    {
-                        foreach (var item in prepopulatedValues)
-                        {
-                            string tooltip = item.Annotation<IShortPathGenerator>()?.ShortPath;
-                            if (item is stu3.Hl7.Fhir.ElementModel.IFhirValueProvider)
-                            {
-                                foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
-                                {
-                                    // output the content as XML fragments
-                                    var fragment = stu3.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                    fragment = AppendXmlFramentResults(fragment, tooltip);
-                                }
-                            }
-                            else if (item is dstu2.Hl7.Fhir.ElementModel.IFhirValueProvider)
-                            {
-                                foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
-                                {
-                                    // output the content as XML fragments
-                                    var fragment = dstu2.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                    fragment = AppendXmlFramentResults(fragment, tooltip);
-                                }
-                            }
-                            else if (item is r4.Hl7.Fhir.ElementModel.IFhirValueProvider)
-                            {
-                                foreach (var t2 in fp4.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
-                                {
-                                    // output the content as XML fragments
-                                    var fragment = r4.Hl7.Fhir.Serialization.FhirSerializer.SerializeToXml(t2, root: t2.TypeName);
-                                    fragment = AppendXmlFramentResults(fragment, tooltip);
-                                }
-                            }
-                            else if (item is ITypedElement te)
-                            {
-                                AppendResults($"<{te.InstanceType} value=\"{te.Value}\">");
-                            }
-                        }
-                    }
+                    FhirPathProcessor.ProcessPrepopulatedValues(prepopulatedValues, AppendXmlFramentResults, AppendResults);
                 }
                 catch (Exception ex)
                 {
