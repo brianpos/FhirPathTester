@@ -37,7 +37,7 @@
                             <RowDefinition></RowDefinition>
                             <RowDefinition Height="auto"></RowDefinition>
                         </Grid.RowDefinitions>
-                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression"  />
+                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" />
 
                         <CommandBar Grid.Row="1" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto">
                             <AppBarButton Icon="Download" Label="Extract" Click="ButtonGo_Click" ToolTipService.ToolTip="Use the fhirpath expression above to extract the data from the resource on the right" />
@@ -77,7 +77,7 @@
                     <ScrollViewer Grid.Column="0" Grid.Row="2" >
                         <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto"  />
                     </ScrollViewer>
-                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json" />
+                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json"  IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" />
                     <!--Row Grid Splitter-->
                     <controls:GridSplitter 
             Foreground="White"
@@ -110,8 +110,8 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                    <ScrollViewer Grid.Column="0" Grid.RowSpan="3"  >
-                        <controls:MarkdownTextBlock Padding="12" Visibility="Collapsed" x:Name="markdownAboutBox" Text="Loading ..." ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    <ScrollViewer x:Name="markdownHost" Visibility="Collapsed" Grid.Column="0" Grid.RowSpan="3"  >
+                        <controls:MarkdownTextBlock RequestedTheme="Dark" Padding="12" x:Name="markdownAboutBox" Text="Loading ..." ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     </ScrollViewer>
                 </Grid>
             </Frame>

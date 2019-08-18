@@ -372,7 +372,7 @@ namespace FhirPathTesterUWP
             }
             catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
 
@@ -563,9 +563,9 @@ namespace FhirPathTesterUWP
             else
                 listHistory.Visibility = Visibility.Collapsed;
             if (item == "About")
-                markdownAboutBox.Visibility = Visibility.Visible;
+                markdownHost.Visibility = Visibility.Visible;
             else
-                markdownAboutBox.Visibility = Visibility.Collapsed;
+                markdownHost.Visibility = Visibility.Collapsed;
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
