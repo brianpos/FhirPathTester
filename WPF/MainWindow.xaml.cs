@@ -284,7 +284,7 @@ namespace FhirPathTester
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextControlFontSize)));
             }
         }
-
+        #region << Drag Drop Functionality >>
         private void textboxInputXML_Drop(object sender, DragEventArgs e)
         {
             // This is the place where we want to support the reading of the file from the file system
@@ -308,6 +308,7 @@ namespace FhirPathTester
         {
             e.Handled = true;
         }
+        #endregion
 
         private void textboxInputXML_SelectionChanged(object sender, RoutedEventArgs e)
         {

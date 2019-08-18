@@ -325,6 +325,9 @@ namespace FhirPathTester
                     }
                     catch (Exception ex4)
                     {
+                        System.Diagnostics.Debug.WriteLine(ex4.Message);
+                        System.Diagnostics.Debug.WriteLine(ex3.Message);
+                        System.Diagnostics.Debug.WriteLine(ex2.Message);
                     }
                 }
             }
