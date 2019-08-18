@@ -75,18 +75,18 @@ namespace FhirPathTester
             else
                 labelDSTU2.Visibility = Visibility.Collapsed;
 
+            if (inputNavR4 != null)
+            {
+                evalContext = new fp4.FhirEvaluationContext(inputNavR4);
+                return inputNavSTU3;
+            }
             if (inputNavSTU3 != null)
             {
                 evalContext = new fp3.FhirEvaluationContext(inputNavSTU3);
                 return inputNavSTU3;
             }
-            if (inputNavDSTU2 != null)
-            {
-                evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
-                return inputNavDSTU2;
-            }
-            evalContext = new fp4.FhirEvaluationContext(inputNavR4);
-            return inputNavR4;
+            evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
+            return inputNavDSTU2;
         }
 
         private void ButtonGo_Click(object sender, RoutedEventArgs e)
