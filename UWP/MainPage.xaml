@@ -235,7 +235,7 @@
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
                     <ScrollViewer Grid.Column="0" Grid.Row="2" >
-                        <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto"  />
+                        <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" PointerMoved="TextboxResult_PointerMoved" PointerExited="TextboxResult_PointerExited"  />
                     </ScrollViewer>
                     <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json"  IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
                     <!--Row Grid Splitter-->

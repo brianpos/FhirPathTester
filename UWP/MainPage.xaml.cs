@@ -307,14 +307,14 @@ namespace FhirPathTesterUWP
                             {
                                 using (var response = await client.GetAsync(webLink))
                                 {
-                            string contents = await response.Content.ReadAsStringAsync();
-                            textboxInputXML.Text = contents;
-                            if (response.Content.Headers.ContentType.MediaType.Contains("xml"))
-                                FhirPathProcessor.PretifyXML(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
-                            if (response.Content.Headers.ContentType.MediaType.Contains("json"))
-                                FhirPathProcessor.PretifyJson(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
-                            AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
-                        }
+                                    string contents = await response.Content.ReadAsStringAsync();
+                                    textboxInputXML.Text = contents;
+                                    if (response.Content.Headers.ContentType.MediaType.Contains("xml"))
+                                        FhirPathProcessor.PretifyXML(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
+                                    if (response.Content.Headers.ContentType.MediaType.Contains("json"))
+                                        FhirPathProcessor.PretifyJson(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
+                                    AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
+                                }
                             }
                         }
                         e.Handled = true;
@@ -407,11 +407,13 @@ namespace FhirPathTesterUWP
         private void ResetResults()
         {
             textboxResult.Blocks.Clear();
+            _tooltipText.Clear();
+            ToolTipService.SetToolTip(textboxResult, null);
         }
 
         private void SetResults(string text, bool error = false)
         {
-            textboxResult.Blocks.Clear();
+            ResetResults();
             var run = new Run() { Text = text };
             var para = new Paragraph();
             para.Inlines.Add(run);
@@ -422,6 +424,8 @@ namespace FhirPathTesterUWP
                 para.FontWeight = Windows.UI.Text.FontWeights.Bold;
             }
         }
+
+        Dictionary<Run, string> _tooltipText = new Dictionary<Run, string>();
         private void AppendResults(string text, bool error = false, string tooltip = null)
         {
             var run = new Run() { Text = text };
@@ -438,17 +442,43 @@ namespace FhirPathTesterUWP
             {
                 // try this one out sometime
                 // https://stackoverflow.com/questions/27649534/set-tooltip-on-range-of-text-in-wpf-richtextbox
-                ToolTip tip = new ToolTip();
-                tip.Content = tooltip;
-                ToolTipService.SetToolTip(para, tip);
+                _tooltipText.Add(run, tooltip);
+                if (ToolTipService.GetToolTip(textboxResult) == null)
+                {
+                    ToolTip tip = new ToolTip();
+                    tip.Content = tooltip;
+                    ToolTipService.SetToolTip(textboxResult, tip);
+                    tip.Opened += Tip_Opened;
+                    tip.Closed += Tip_Closed;
+                }
 
-                //tooltopTemp.Content = tooltip;
-                //ToolTipService.SetToolTip(para, tooltopTemp);
+                //var run2 = new Run() { Text = " " + tooltip.Replace("\r\n", ", ") };
+                //run2.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Gray);
+                //run2.FontStyle = Windows.UI.Text.FontStyle.Italic;
+                //para.Inlines.Add(run2);
+            }
+        }
 
-                var run2 = new Run() { Text = " " + tooltip.Replace("\r\n", ", ") };
-                run2.Foreground = new Windows.UI.Xaml.Media.SolidColorBrush(Windows.UI.Colors.Gray);
-                run2.FontStyle = Windows.UI.Text.FontStyle.Italic;
-                para.Inlines.Add(run2);
+        private void Tip_Closed(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void Tip_Opened(object sender, RoutedEventArgs e)
+        {
+            // current mouse position
+            var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
+            var x = pointerPosition.X - Window.Current.Bounds.X;
+            var y = pointerPosition.Y - Window.Current.Bounds.Y;
+            ToolTip tip = sender as ToolTip;
+            var ttv = textboxResult.TransformToVisual(Window.Current.Content);
+            var sc = ttv.TransformPoint(new Windows.Foundation.Point(0, 0));
+            var tp = textboxResult.GetPositionFromPoint(new Windows.Foundation.Point(x - sc.X, y - sc.Y));
+            if (tp.Parent is Run run)
+            {
+                if (_tooltipText.ContainsKey(run))
+                {
+                    tip.Content = _tooltipText[run];
+                }
             }
         }
 
@@ -531,6 +561,40 @@ namespace FhirPathTesterUWP
         {
             string initalMarkdownText = await FileIO.ReadTextAsync(await Package.Current.InstalledLocation.GetFileAsync("about.md"));
             markdownAboutBox.Text = initalMarkdownText;
+        }
+
+        private void TextboxResult_PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            ToolTip temp = ToolTipService.GetToolTip(textboxResult) as ToolTip;
+            if (temp != null)
+            {
+                // current mouse position
+                //var pointerPosition = Windows.UI.Core.CoreWindow.GetForCurrentThread().PointerPosition;
+                //var x = pointerPosition.X - Window.Current.Bounds.X;
+                //var y = pointerPosition.Y - Window.Current.Bounds.Y;
+                //var ttv = textboxResult.TransformToVisual(Window.Current.Content);
+                //var sc = ttv.TransformPoint(new Windows.Foundation.Point(0, 0));
+                var tp = textboxResult.GetPositionFromPoint(e.GetCurrentPoint(textboxResult).Position);
+                if (tp.Parent is Run run)
+                {
+                    if (_tooltipText.ContainsKey(run))
+                    {
+                        temp.Content = _tooltipText[run];
+                        if (!temp.IsOpen)
+                        {
+                            temp.IsOpen = true;
+                        }
+                        e.Handled = true;
+                    }
+                }
+            }
+        }
+
+        private void TextboxResult_PointerExited(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
+        {
+            ToolTip temp = ToolTipService.GetToolTip(textboxResult) as ToolTip;
+            if (temp?.IsOpen == true)
+                temp.IsOpen = false;
         }
     }
 }
