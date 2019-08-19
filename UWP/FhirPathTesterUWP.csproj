@@ -274,12 +274,6 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
       <Version>5.1.1</Version>
     </PackageReference>
-    <PackageReference Include="Phonix">
-      <Version>1.0.1</Version>
-    </PackageReference>
-    <PackageReference Include="Porter2Stemmer">
-      <Version>1.0.0</Version>
-    </PackageReference>
   </ItemGroup>
   <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
     <ItemGroup>
