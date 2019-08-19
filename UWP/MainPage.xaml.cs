@@ -303,8 +303,10 @@ namespace FhirPathTesterUWP
                         Uri webLink = await e.DataView.GetWebLinkAsync();
                         if (!string.IsNullOrEmpty(webLink.OriginalString))
                         {
-                            HttpClient client = new HttpClient();
-                            var response = await client.GetAsync(webLink);
+                            using (HttpClient client = new HttpClient())
+                            {
+                                using (var response = await client.GetAsync(webLink))
+                                {
                             string contents = await response.Content.ReadAsStringAsync();
                             textboxInputXML.Text = contents;
                             if (response.Content.Headers.ContentType.MediaType.Contains("xml"))
@@ -312,6 +314,8 @@ namespace FhirPathTesterUWP
                             if (response.Content.Headers.ContentType.MediaType.Contains("json"))
                                 FhirPathProcessor.PretifyJson(textboxInputXML.Text, (val) => { textboxInputXML.Text = val; });
                             AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
+                        }
+                            }
                         }
                         e.Handled = true;
                         return;
