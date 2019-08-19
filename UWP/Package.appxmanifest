@@ -29,6 +29,5 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <uap:Capability Name="removableStorage"/>
-    <uap:Capability Name="enterpriseAuthentication"/>
   </Capabilities>
 </Package>
