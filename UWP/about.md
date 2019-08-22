@@ -15,6 +15,7 @@ New Features in v1.0.8:
 * Drag and drop example resource files from the web! (not, does not support authentication to the FHIR Server)
 * Hotkeys Ctrl+E and Ctrl+T to the execute and validate buttons
 * Supports the Dark system theme
+* Display the fhirpath location of the cursor in the status bar once an extract or validate call has been performed
 
 Key features:
 

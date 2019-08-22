@@ -33,6 +33,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using Windows.ApplicationModel;
+using Hl7.Fhir.Utility;
 
 namespace FhirPathTesterUWP
 {
@@ -76,6 +77,7 @@ namespace FhirPathTesterUWP
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private System.Collections.Generic.SortedList<int, string> _locations = new SortedList<int, string>();
         private ITypedElement GetResourceNavigator(out EvaluationContext evalContext)
         {
             string parseErrors2;
@@ -89,6 +91,20 @@ namespace FhirPathTesterUWP
             {
                 ResetResults();
                 AppendResults(String.Join("\r\n--------------------\r\n", parseErrors2, parseErrors3, parseErrors4), true);
+            }
+            if (inputNavR4 != null || inputNavSTU3 != null || inputNavDSTU2 != null)
+            {
+                ISourceNode node;
+                if (textboxInputXML.Text.StartsWith("{"))
+                    node = Hl7.Fhir.Serialization.FhirJsonNode.Parse(textboxInputXML.Text);
+                else
+                    node = Hl7.Fhir.Serialization.FhirXmlNode.Parse(textboxInputXML.Text);
+                _locations.Clear();
+                int lastPos = 0;
+                IPositionInfo lastNode = null;
+                AddLocations(node, ref lastNode, ref lastPos, textboxInputXML.Text.ToCharArray());
+                string t = _locations.LastOrDefault(c => c.Key < textboxInputXML.SelectionStart).Value;
+                System.Diagnostics.Trace.WriteLine($"Focused: {t}");
             }
 
             if (inputNavR4 != null)
@@ -118,6 +134,42 @@ namespace FhirPathTesterUWP
             }
             evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
             return inputNavDSTU2;
+        }
+
+        private void AddLocations(ISourceNode node, ref IPositionInfo lastNode, ref int lastCharPos, char[] chars)
+        {
+            int location = 0;
+            IPositionInfo posInfo = (node as IAnnotated)?.Annotation<Hl7.Fhir.Serialization.XmlSerializationDetails>();
+            if (posInfo == null)
+                posInfo = (node as IAnnotated)?.Annotation<Hl7.Fhir.Serialization.JsonSerializationDetails>();
+            if (posInfo != null)
+            {
+                if (lastNode == null)
+                    location = 0;
+                else
+                {
+                    var linesToSkip = posInfo.LineNumber - lastNode.LineNumber;
+                    var colsToSkip = posInfo.LinePosition;
+                    if (linesToSkip == 0)
+                        colsToSkip -= lastNode.LinePosition;
+                    while (linesToSkip > 0 && lastCharPos < chars.Length)
+                    {
+                        lastCharPos++;
+                        if (chars[lastCharPos] == '\r')
+                            linesToSkip--;
+                    }
+                    lastCharPos += colsToSkip;
+                    location = lastCharPos; // need to patch this
+                }
+                lastNode = posInfo;
+                _locations.Add(location, node.Location);
+                // System.Diagnostics.Trace.WriteLine($"{location}: {node.Location}");
+            }
+            lastCharPos = location;
+            foreach (var child in node.Children())
+            {
+                AddLocations(child, ref lastNode, ref lastCharPos, chars);
+            }
         }
 
         private void ButtonGo_Click(object sender, RoutedEventArgs e)
@@ -496,6 +548,11 @@ namespace FhirPathTesterUWP
         {
             CursorPosition(textboxInputXML, out int row, out int col);
             labelStatus.Text = $"Ln {row} Col {col}";
+            if (_locations.Count > 0)
+            {
+                string t = _locations.LastOrDefault(c => c.Key < textboxInputXML.SelectionStart).Value;
+                labelStatus.Text += $"   {t}";
+            }
         }
 
         /// <summary>
