@@ -34,6 +34,9 @@ Additional custom fhirpath functions:
 | shortpathname | Returns the full path of the selected location (does not include array selectors where the cardinality of the property is 0..1)|
 | dateadd(field, amount) | Add a value to a datetime field (field == yy,mm,dd,hh,hi,ss) |
 | LuhnTest | Checks the selected value to verify that it conforms to the Luhn Checksum algorithm https://rosettacode.org/wiki/Luhn_test_of_credit_card_numbers#C.23 |
+| DoubleMetaphone | Returns the double metaphone approximation of the selected node (will break into multiple words, and return a value for each word) |
+| Metaphone | Returns the metaphone approximation of the selected node (will break into multiple words, and return a value for each word) |
+| Stem | Returns the Porter 2 Stemming alogorithm for each word in the input location |
 
 ## Support 
 Issues can be raised in the GitHub repository at [https://github.com/brianpos/fhirpathtester/issues](https://github.com/brianpos/fhirpathtester/issues).
