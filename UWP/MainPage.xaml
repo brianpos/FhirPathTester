@@ -192,7 +192,7 @@
                         </Grid.RowDefinitions>
                         <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
 
-                        <CommandBar Grid.Row="1" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto">
+                        <CommandBar Grid.Row="1" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto" ClosedDisplayMode="Compact" IsDynamicOverflowEnabled="False">
                             <AppBarButton Icon="Download" Label="Extract" Click="ButtonGo_Click" AccessKey="E" ToolTipService.ToolTip="Use the fhirpath expression above to extract the data from the resource on the right (Ctrl+E)" >
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Modifiers="Control" Key="E"/>
@@ -204,10 +204,6 @@
                                 </AppBarButton.KeyboardAccelerators>
                             </AppBarButton>
                             <AppBarButton Label="Parse" Click="ButtonCheckExpression_Click" ToolTipService.ToolTip="Parse the fhirpath expression above to determine if it is valid to run against the resource on the right"/>
-                            <AppBarSeparator/>
-                            <AppBarToggleButton x:Name="btnDSTU2" Label="DSTU2" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the DSTU2 parser"/>
-                            <AppBarToggleButton x:Name="btnSTU3" Label="STU3" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the STU3 parser"/>
-                            <AppBarToggleButton x:Name="btnR4" Label="R4" IsEnabled="False" ToolTipService.ToolTip="The resource on the right parses with the R4 parser"/>
                             <AppBarSeparator/>
                             <AppBarButton x:Name="btnXML" Label="xml" Click="BtnXML_Click" ToolTipService.ToolTip="Pretify the xml content (convert to xml if is in json)" />
                             <AppBarButton x:Name="btnJson" Label="json" Click="BtnJson_Click" ToolTipService.ToolTip="Pretify the json content (convert to json if is in xml)" />
@@ -280,13 +276,19 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" x:Name="labelStatus" Text="" VerticalAlignment="Center"/>
-            <Button Grid.Column="2" Width="24" Content="-" Padding="0" Click="Button_Click"/>
-            <Slider x:Name="sliderFontSize" Grid.Column="3" Width="100" Value="{Binding TextControlFontSize, Mode=TwoWay}" Minimum="8" Maximum="76" Padding="6,0" />
-            <Button Grid.Column="4" Width="24" Content="+" Padding="0" Click="Button_Click_1"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" >
+                <TextBlock x:Name="textPosition" Padding="4,0" Text="Ln 0 Col 0" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
+                    <TextBlock x:Name="btnDSTU2" Padding="4,0" Text="DSTU2" ToolTipService.ToolTip="The resource on the right parses with the DSTU2 parser"/>
+                    <TextBlock x:Name="btnSTU3" Padding="4,0" Text="STU3" ToolTipService.ToolTip="The resource on the right parses with the STU3 parser"/>
+                    <TextBlock x:Name="btnR4" Padding="4,0" Text="R4" ToolTipService.ToolTip="The resource on the right parses with the R4 parser"/>
+                </StackPanel>
+                <Button Width="24" Content="-" Padding="0" Click="Button_Click"/>
+                <Slider x:Name="sliderFontSize" Width="100" Value="{Binding TextControlFontSize, Mode=TwoWay}" Minimum="8" Maximum="76" Padding="6,0" />
+                <Button Width="24" Content="+" Padding="0" Click="Button_Click_1"/>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

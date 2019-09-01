@@ -547,11 +547,11 @@ namespace FhirPathTesterUWP
         private void TextboxInputXML_SelectionChanged(object sender, RoutedEventArgs e)
         {
             CursorPosition(textboxInputXML, out int row, out int col);
-            labelStatus.Text = $"Ln {row} Col {col}";
+            textPosition.Text = $"Ln {row} Col {col}";
             if (_locations.Count > 0)
             {
                 string t = _locations.LastOrDefault(c => c.Key < textboxInputXML.SelectionStart).Value;
-                labelStatus.Text += $"   {t}";
+                labelStatus.Text = $"{t}";
             }
         }
 
