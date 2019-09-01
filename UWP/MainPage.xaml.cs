@@ -53,6 +53,13 @@ namespace FhirPathTesterUWP
 
             // and remember the initial state
             AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
+            System.Threading.Tasks.Task.Run(() => {
+                // in the background load up the 3 sets of ClassLibraries
+                r4.Hl7.Fhir.Serialization.BaseFhirParser.Inspector.Import(typeof(r4.Hl7.Fhir.Serialization.BaseFhirParser).Assembly);
+                // stu3.Hl7.Fhir.Serialization.BaseFhirParser.Inspector.Import(typeof(stu3.Hl7.Fhir.Serialization.BaseFhirParser).Assembly);
+                dstu2.Hl7.Fhir.Serialization.BaseFhirParser.Inspector.Import(typeof(dstu2.Hl7.Fhir.Serialization.BaseFhirParser).Assembly);
+                FhirPathProcessor.GetResourceNavigatorSTU3("<Patient xmlns=\"http://hl7.org/fhir\"/>", out var errs);
+            });
         }
 
         public ObservableCollection<HistoryItemDetails> HistoryItems { get; set; }
