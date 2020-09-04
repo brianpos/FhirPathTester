@@ -78,7 +78,7 @@ namespace FhirPathTester
             if (inputNavR4 != null)
             {
                 evalContext = new fp4.FhirEvaluationContext(inputNavR4);
-                return inputNavSTU3;
+                return inputNavR4;
             }
             if (inputNavSTU3 != null)
             {

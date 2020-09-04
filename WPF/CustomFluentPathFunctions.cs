@@ -1,9 +1,12 @@
 ﻿extern alias dstu2;
 extern alias stu3;
+extern alias r4;
 // https://github.com/NuGet/Home/issues/4989#issuecomment-311042085
 
 using Hl7.Fhir.ElementModel;
 using Hl7.Fhir.Model.Primitives;
+using Hl7.Fhir.Specification;
+using Hl7.Fhir.Utility;
 // using Hl7.Fhir.FluentPath;
 //using Hl7.Fhir.Model;
 using Hl7.FhirPath;
@@ -37,7 +40,7 @@ namespace FhirPathTester
                             }).ToArray();
                             return FhirValueListCreate(bits);
                         }
-                        return FhirValueListCreate(new object[] { "?" } );
+                        return ElementNode.CreateList("?");
                     });
                     _st.Add("pathname", (object f) =>
                     {
@@ -49,7 +52,7 @@ namespace FhirPathTester
                             }).ToArray();
                             return FhirValueListCreate(bits);
                         }
-                        return FhirValueListCreate(new object[] { "?" });
+                        return ElementNode.CreateList("?");
                     });
                     _st.Add("shortpathname", (object f) =>
                     {
@@ -65,7 +68,7 @@ namespace FhirPathTester
                             });
                             return ElementNode.CreateList(bits);
                         }
-                        return FhirValueListCreate(new object[] { "?" });
+                        return ElementNode.CreateList("?");
                     });
                     _st.Add("DoubleMetaphone", (IEnumerable<ITypedElement> f) =>
                     {
@@ -103,26 +106,22 @@ namespace FhirPathTester
                             .Select(word => stemmer.Stem(word).Value)
                             .SelectMany(wordStem => ElementNode.CreateList(mp.BuildKey(wordStem)));
                     });
-                    //_st.Add("commonpathname", (object f) =>
-                    //{
-                    //    if (f is IEnumerable<ITypedElement>)
-                    //    {
-                    //        object[] bits = (f as IEnumerable<ITypedElement>).Select(i =>
-                    //        {
-                    //            if (i is stu3.Hl7.Fhir.ElementModel.PocoElementNode)
-                    //            {
-                    //                return (i as stu3.Hl7.Fhir.ElementModel.PocoElementNode).CommonPath;
-                    //            }
-                    //            if (i is dstu2.Hl7.Fhir.ElementModel.PocoElementNode)
-                    //            {
-                    //                return (i as dstu2.Hl7.Fhir.ElementModel.PocoElementNode).CommonPath;
-                    //            }
-                    //            return "?";
-                    //        }).ToArray();
-                    //        return FhirValueListCreate(bits);
-                    //    }
-                    //    return FhirValueListCreate(new object[] { "?" });
-                    //});
+                    _st.Add("commonpathname", (object f) =>
+                    {
+                        if (f is IEnumerable<ITypedElement>)
+                        {
+                            return (f as IEnumerable<ITypedElement>).Select(i =>
+                            {
+                                if (i is SqlonfhirScopedNode sn)
+                                {
+                                    return ElementNode.ForPrimitive(sn.CommonPath);
+                                }
+                                // Fall-back to the ShortPath if it wasn't one of these
+                                return ElementNode.ForPrimitive(i.Annotation<IShortPathGenerator>().ShortPath);
+                            });
+                        }
+                        return ElementNode.CreateList("?");
+                    });
 
                     // Custom function for evaluating the date operation (custom Healthconnex)
                     _st.Add("dateadd", (PartialDateTime f, string field, long amount) =>
@@ -190,5 +189,150 @@ namespace FhirPathTester
         {
             return digits.Select((d, i) => i % 2 == digits.Length % 2 ? ((2 * d) % 10) + d / 5 : d).Sum() % 10;
         }
+    }
+
+    public class SqlonfhirScopedNode : ITypedElement, IAnnotated
+    {
+        public readonly ITypedElement Current = null;
+
+        public SqlonfhirScopedNode(ITypedElement wrapped)
+        {
+            Current = wrapped;
+        }
+
+        private SqlonfhirScopedNode(SqlonfhirScopedNode parent, ITypedElement wrapped)
+        {
+            Current = wrapped;
+            Parent = parent;
+        }
+
+        /// <summary>
+        /// Represents the most direct parent in which the current node 
+        /// is located.
+        /// </summary>
+        /// <remarks>
+        /// When the node is the initial root, there is no parent.
+        /// </remarks>
+        public readonly SqlonfhirScopedNode Parent;
+
+        public string CommonPath
+        {
+            get
+            {
+                // return ShortPath;
+                string parentCommonPath = Parent?.CommonPath;
+                if (String.IsNullOrEmpty(parentCommonPath))
+                {
+                    return Current.Name;
+                }
+                // Needs to consider that the index might be irrelevant
+                if (ShortPath.EndsWith("]"))
+                {
+                    Hl7.Fhir.Model.Base fhirValue = ElementNodeExtensions.Annotation<r4::Hl7.Fhir.ElementModel.IFhirValueProvider>(this)?.FhirValue;
+                    if (fhirValue == null)
+                        fhirValue = ElementNodeExtensions.Annotation<stu3::Hl7.Fhir.ElementModel.IFhirValueProvider>(this)?.FhirValue;
+                    else if (fhirValue == null)
+                        fhirValue = ElementNodeExtensions.Annotation<dstu2::Hl7.Fhir.ElementModel.IFhirValueProvider>(this)?.FhirValue;
+                    if (fhirValue is r4::Hl7.Fhir.Model.Identifier ident)
+                    {
+                        // Need to construct a where clause for this property
+                        if (!string.IsNullOrEmpty(ident.System))
+                            return $"{parentCommonPath}.{Current.Name}.where(system='{ident.System}')";
+                    }
+                    else if (fhirValue is r4::Hl7.Fhir.Model.ContactPoint cp)
+                    {
+                        // Need to construct a where clause for this property
+                        if (cp.System.HasValue)
+                            return $"{parentCommonPath}.{Current.Name}.where(system='{cp.System.Value.GetLiteral()}')";
+                    }
+                    else if (fhirValue is r4::Hl7.Fhir.Model.Coding cd)
+                    {
+                        // Need to construct a where clause for this property
+                        if (!string.IsNullOrEmpty(cd.System))
+                            return $"{parentCommonPath}.{Current.Name}.where(system='{cd.System}')";
+                    }
+                    else if (fhirValue is r4::Hl7.Fhir.Model.Address addr)
+                    {
+                        // Need to construct a where clause for this property
+                        if (addr.Use.HasValue)
+                            return $"{parentCommonPath}.{Current.Name}.where(use='{addr.Use.Value.GetLiteral()}')";
+                    }
+                    else if (fhirValue is r4::Hl7.Fhir.Model.Questionnaire.ItemComponent gc)
+                    {
+                        // Need to construct a where clause for this property
+                        if (!string.IsNullOrEmpty(gc.LinkId))
+                            return $"{parentCommonPath}.{Current.Name}.where(linkId='{gc.LinkId}')";
+                    }
+                    else if (fhirValue is r4::Hl7.Fhir.Model.QuestionnaireResponse.ItemComponent rgc)
+                    {
+                        // Need to construct a where clause for this property
+                        if (!string.IsNullOrEmpty(rgc.LinkId))
+                            return $"{parentCommonPath}.{Current.Name}.where(linkId='{rgc.LinkId}')";
+                    }
+                    else if (fhirValue is r4::Hl7.Fhir.Model.Extension ext4)
+                    {
+                        // Need to construct a where clause for this property
+                        // The extension is different as with fhirpath there
+                        // is a shortcut format of .extension('url'), and since
+                        // all extensions have a property name of extension, can just at the brackets and string name
+                        return $"{parentCommonPath}.{Current.Name}('{ext4.Url}')";
+                    }
+                    else if (fhirValue is stu3::Hl7.Fhir.Model.Extension ext3)
+                    {
+                        // Need to construct a where clause for this property
+                        // The extension is different as with fhirpath there
+                        // is a shortcut format of .extension('url'), and since
+                        // all extensions have a property name of extension, can just at the brackets and string name
+                        return $"{parentCommonPath}.{Current.Name}('{ext3.Url}')";
+                    }
+                    else if (fhirValue is dstu2::Hl7.Fhir.Model.Extension ext2)
+                    {
+                        // Need to construct a where clause for this property
+                        // The extension is different as with fhirpath there
+                        // is a shortcut format of .extension('url'), and since
+                        // all extensions have a property name of extension, can just at the brackets and string name
+                        return $"{parentCommonPath}.{Current.Name}('{ext2.Url}')";
+                    }
+                    return $"{parentCommonPath}.{LocalLocation}";
+                }
+                return $"{Parent.CommonPath}.{Current.Name}";
+            }
+        }
+
+        public string ShortPath
+        {
+            get
+            {
+                return ElementNodeExtensions.Annotation<IShortPathGenerator>(this)?.ShortPath;
+            }
+        }
+
+        public string LocalLocation => Parent == null ? Location :
+                        $"{Location.Substring(Parent.Location.Length + 1)}";
+
+        #region << ITypedElement members >>
+        public string Name => Current.Name;
+
+        public string InstanceType => Current.InstanceType;
+
+        public object Value => Current.Value;
+
+        public string Location => Current.Location;
+
+        public IElementDefinitionSummary Definition => Current.Definition;
+
+        public IEnumerable<ITypedElement> Children(string name = null) =>
+            Current.Children(name).Select(c => new SqlonfhirScopedNode(this, c));
+        #endregion
+
+        #region << IAnnotated members >>
+        public IEnumerable<object> Annotations(Type type)
+        {
+            if (type == typeof(SqlonfhirScopedNode))
+                return new[] { this };
+            else
+                return Current.Annotations(type);
+        }
+        #endregion
     }
 }

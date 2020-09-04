@@ -43,7 +43,7 @@ namespace FhirPathTester
             }
             parseErrors = null;
             var inputNav = dstu2.Hl7.Fhir.ElementModel.PocoNavigatorExtensions.ToTypedElement(resource);
-            return inputNav;
+            return new ScopedNode(new SqlonfhirScopedNode(inputNav));
         }
         public static ITypedElement GetResourceNavigatorSTU3(string text, out string parseErrors)
         {
@@ -62,7 +62,7 @@ namespace FhirPathTester
             }
             parseErrors = null;
             var inputNav = stu3.Hl7.Fhir.ElementModel.PocoNavigatorExtensions.ToTypedElement(resource);
-            return inputNav;
+            return new ScopedNode(new SqlonfhirScopedNode(inputNav));
         }
         public static ITypedElement GetResourceNavigatorR4(string text, out string parseErrors)
         {
@@ -81,7 +81,7 @@ namespace FhirPathTester
             }
             parseErrors = null;
             var inputNav = r4.Hl7.Fhir.ElementModel.PocoNavigatorExtensions.ToTypedElement(resource);
-            return inputNav;
+            return new ScopedNode(new SqlonfhirScopedNode(inputNav));
         }
 
         public static void ProcessPrepopulatedValues(IEnumerable<ITypedElement> prepopulatedValues, Func<string, string, string> AppendXmlFramentResults, Action<string, bool, string> AppendResults)
@@ -90,8 +90,8 @@ namespace FhirPathTester
             {
                 foreach (var item in prepopulatedValues)
                 {
-                    string tooltip = item.Annotation<IShortPathGenerator>()?.ShortPath;
-                    if (item is stu3.Hl7.Fhir.ElementModel.IFhirValueProvider)
+                    string tooltip = item.Location; // Annotation<IShortPathGenerator>()?.ShortPath;
+                    if (item.Annotation<stu3.Hl7.Fhir.ElementModel.IFhirValueProvider>() != null)
                     {
                         foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                         {
@@ -100,7 +100,7 @@ namespace FhirPathTester
                             fragment = AppendXmlFramentResults(fragment, tooltip);
                         }
                     }
-                    else if (item is dstu2.Hl7.Fhir.ElementModel.IFhirValueProvider)
+                    else if (item.Annotation<dstu2.Hl7.Fhir.ElementModel.IFhirValueProvider>() != null)
                     {
                         foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                         {
@@ -109,7 +109,7 @@ namespace FhirPathTester
                             fragment = AppendXmlFramentResults(fragment, tooltip);
                         }
                     }
-                    else if (item is r4.Hl7.Fhir.ElementModel.IFhirValueProvider)
+                    else if (item.Annotation<r4.Hl7.Fhir.ElementModel.IFhirValueProvider>() != null)
                     {
                         foreach (var t2 in fp4.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                         {
@@ -120,7 +120,7 @@ namespace FhirPathTester
                     }
                     else if (item is ITypedElement te)
                     {
-                        AppendResults($"<{te.InstanceType} value=\"{te.Value}\">", false, null);
+                        AppendResults($"<{te.InstanceType} value=\"{te.Value}\">", false, tooltip);
                     }
                 }
             }
