@@ -96,7 +96,7 @@ namespace FhirPathTester
                         foreach (var t2 in fp3.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                         {
                             // output the content as XML fragments
-                            var fragment = new stu3.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName);
+                            var fragment = new stu3.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName.Replace("#", "."));
                             fragment = AppendXmlFramentResults(fragment, tooltip);
                         }
                     }
@@ -105,7 +105,7 @@ namespace FhirPathTester
                         foreach (var t2 in fp2.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                         {
                             // output the content as XML fragments
-                            var fragment = new dstu2.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName);
+                            var fragment = new dstu2.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName.Replace("#", "."));
                             fragment = AppendXmlFramentResults(fragment, tooltip);
                         }
                     }
@@ -114,7 +114,7 @@ namespace FhirPathTester
                         foreach (var t2 in fp4.ElementNavFhirExtensions.ToFhirValues(new ITypedElement[] { item }).Where(i => i != null))
                         {
                             // output the content as XML fragments
-                            var fragment = new r4.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName);
+                            var fragment = new r4.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(t2, root: t2.TypeName.Replace("#", "."));
                             fragment = AppendXmlFramentResults(fragment, tooltip);
                         }
                     }
@@ -384,51 +384,51 @@ namespace FhirPathTester
         public static void PretifyXML(string text, Action<string> setText)
         {
             // prettify the XML (and convert to XML if it wasn't already)
-            f3.Resource resource = null;
+            f4.Resource resource4 = null;
             string contentAsXML;
             try
             {
                 if (text.StartsWith("{"))
                 {
-                    resource = new stu3.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f3.Resource>(text);
-                    contentAsXML = new stu3.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource);
+                    resource4 = new r4.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f4.Resource>(text);
+                    contentAsXML = new r4.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource4);
                 }
                 else
                     contentAsXML = text;
                 var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
                 setText(doc.ToString(System.Xml.Linq.SaveOptions.None));
             }
-            catch (Exception ex3)
+            catch (Exception ex4)
             {
-                f2.Resource resource2 = null;
+                f3.Resource resource3 = null;
                 try
                 {
                     if (text.StartsWith("{"))
                     {
-                        resource2 = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f2.Resource>(text);
-                        contentAsXML = new dstu2.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource2);
+                        resource3 = new stu3.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f3.Resource>(text);
+                        contentAsXML = new stu3.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource3);
                     }
                     else
                         contentAsXML = text;
                     var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
                     setText(doc.ToString(System.Xml.Linq.SaveOptions.None));
                 }
-                catch (Exception ex2)
+                catch (Exception ex3)
                 {
-                    f4.Resource resource4 = null;
+                    f2.Resource resource2 = null;
                     try
                     {
                         if (text.StartsWith("{"))
                         {
-                            resource4 = new r4.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f4.Resource>(text);
-                            contentAsXML = new r4.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource4);
+                            resource2 = new dstu2.Hl7.Fhir.Serialization.FhirJsonParser().Parse<f2.Resource>(text);
+                            contentAsXML = new dstu2.Hl7.Fhir.Serialization.FhirXmlSerializer().SerializeToString(resource2);
                         }
                         else
                             contentAsXML = text;
                         var doc = System.Xml.Linq.XDocument.Parse(contentAsXML);
                         setText(doc.ToString(System.Xml.Linq.SaveOptions.None));
                     }
-                    catch (Exception ex4)
+                    catch (Exception ex2)
                     {
                         System.Diagnostics.Debug.WriteLine(ex4.Message);
                         System.Diagnostics.Debug.WriteLine(ex3.Message);
@@ -441,7 +441,7 @@ namespace FhirPathTester
         public static void PretifyJson(string text, Action<string> setText)
         {
             // prettify the Json (and convert to Json if it wasn't already)
-            f3.Resource resource = null;
+            f4.Resource resource4 = null;
             string contentAsJson;
             try
             {
@@ -451,17 +451,17 @@ namespace FhirPathTester
                 }
                 else
                 {
-                    resource = new stu3.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f3.Resource>(text);
-                    contentAsJson = new stu3.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource);
+                    resource4 = new r4.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f4.Resource>(text);
+                    contentAsJson = new r4.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource4);
                 }
                 var sr = new System.IO.StringReader(contentAsJson);
                 var reader = new JsonTextReader(sr);
                 var doc = JObject.Load(reader);
                 setText(doc.ToString(Formatting.Indented));
             }
-            catch (Exception)
+            catch (Exception ex4)
             {
-                f2.Resource resource2 = null;
+                f3.Resource resource3 = null;
                 try
                 {
                     if (text.StartsWith("{"))
@@ -470,17 +470,17 @@ namespace FhirPathTester
                     }
                     else
                     {
-                        resource2 = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f2.Resource>(text);
-                        contentAsJson = new dstu2.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource2);
+                        resource3 = new stu3.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f3.Resource>(text);
+                        contentAsJson = new dstu2.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource3);
                     }
                     var sr = new System.IO.StringReader(contentAsJson);
                     var reader = new JsonTextReader(sr);
                     var doc = JObject.Load(reader);
                     setText(doc.ToString(Formatting.Indented));
                 }
-                catch (Exception)
+                catch (Exception ex3)
                 {
-                    f4.Resource resource4 = null;
+                    f2.Resource resource2 = null;
                     try
                     {
                         if (text.StartsWith("{"))
@@ -489,16 +489,19 @@ namespace FhirPathTester
                         }
                         else
                         {
-                            resource4 = new r4.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f4.Resource>(text);
-                            contentAsJson = new r4.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource4);
+                            resource2 = new dstu2.Hl7.Fhir.Serialization.FhirXmlParser().Parse<f2.Resource>(text);
+                            contentAsJson = new dstu2.Hl7.Fhir.Serialization.FhirJsonSerializer().SerializeToString(resource2);
                         }
                         var sr = new System.IO.StringReader(contentAsJson);
                         var reader = new JsonTextReader(sr);
                         var doc = JObject.Load(reader);
                         setText(doc.ToString(Formatting.Indented));
                     }
-                    catch (Exception)
+                    catch (Exception ex2)
                     {
+                        System.Diagnostics.Debug.WriteLine(ex4.Message);
+                        System.Diagnostics.Debug.WriteLine(ex3.Message);
+                        System.Diagnostics.Debug.WriteLine(ex2.Message);
                     }
                 }
             }

@@ -34,6 +34,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using Windows.ApplicationModel;
 using Hl7.Fhir.Utility;
+using Windows.Devices.Perception;
 
 namespace FhirPathTesterUWP
 {
@@ -47,7 +48,7 @@ namespace FhirPathTesterUWP
             this.InitializeComponent();
 
             TextControlFontSize = 22;
-            textboxInputXML.Text = "<Patient xmlns=\"http://hl7.org/fhir\">\r\n  <name>\r\n    <given value=\"brian\"/>\r\n  </name>\r\n  <birthDate value=\"1980\"/>\r\n</Patient>";
+            textboxInputXML.Text = "<Patient xmlns=\"http://hl7.org/fhir\">\r\n  <name>\r\n    <family value=\"pos\"/>\r\n    <given value=\"brian\"/>\r\n    <given value=\"richard\"/>\r\n  </name>\r\n  <birthDate value=\"1980\"/>\r\n</Patient>";
             textboxExpression.Text = "birthDate < today()";
             DataContext = this;
 
@@ -84,7 +85,15 @@ namespace FhirPathTesterUWP
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private System.Collections.Generic.SortedList<int, string> _locations = new SortedList<int, string>();
+        public class SourceLocation
+        {
+            public string location;
+            public int start;
+            public int end;
+            public int length;
+        }
+
+        private System.Collections.Generic.SortedList<int, SourceLocation> _locations = new SortedList<int, SourceLocation>();
         private ITypedElement GetResourceNavigator(out EvaluationContext evalContext)
         {
             string parseErrors2;
@@ -109,8 +118,9 @@ namespace FhirPathTesterUWP
                 _locations.Clear();
                 int lastPos = 0;
                 IPositionInfo lastNode = null;
+                System.Diagnostics.Trace.WriteLine("-------------------");
                 AddLocations(node, ref lastNode, ref lastPos, textboxInputXML.Text.ToCharArray());
-                string t = _locations.LastOrDefault(c => c.Key < textboxInputXML.SelectionStart).Value;
+                string t = _locations.LastOrDefault(c => c.Key < textboxInputXML.SelectionStart).Value?.location;
                 System.Diagnostics.Trace.WriteLine($"Focused: {t}");
             }
 
@@ -143,8 +153,9 @@ namespace FhirPathTesterUWP
             return inputNavDSTU2;
         }
 
-        private void AddLocations(ISourceNode node, ref IPositionInfo lastNode, ref int lastCharPos, char[] chars)
+        private SourceLocation AddLocations(ISourceNode node, ref IPositionInfo lastNode, ref int lastCharPos, char[] chars)
         {
+            SourceLocation sl = null;
             int location = 0;
             IPositionInfo posInfo = (node as IAnnotated)?.Annotation<Hl7.Fhir.Serialization.XmlSerializationDetails>();
             if (posInfo == null)
@@ -156,9 +167,9 @@ namespace FhirPathTesterUWP
                 else
                 {
                     var linesToSkip = posInfo.LineNumber - lastNode.LineNumber;
-                    var colsToSkip = posInfo.LinePosition;
+                    var colsToSkip = posInfo.LinePosition - 1;
                     if (linesToSkip == 0)
-                        colsToSkip -= lastNode.LinePosition;
+                        colsToSkip -= lastNode.LinePosition - 1;
                     while (linesToSkip > 0 && lastCharPos < chars.Length)
                     {
                         lastCharPos++;
@@ -169,14 +180,29 @@ namespace FhirPathTesterUWP
                     location = lastCharPos; // need to patch this
                 }
                 lastNode = posInfo;
-                _locations.Add(location, node.Location);
+                sl = new SourceLocation()
+                {
+                    location = node.Location,
+                    start = location
+                };
+                _locations.Add(location, sl);
                 // System.Diagnostics.Trace.WriteLine($"{location}: {node.Location}");
             }
             lastCharPos = location;
+            SourceLocation lastChild = null;
             foreach (var child in node.Children())
             {
-                AddLocations(child, ref lastNode, ref lastCharPos, chars);
+                var cloc = AddLocations(child, ref lastNode, ref lastCharPos, chars);
+                if (lastChild != null)
+                    lastChild.end = cloc.start;
+                lastChild = cloc;
             }
+            if (sl != null)
+            {
+                sl.end = lastCharPos;
+                System.Diagnostics.Trace.WriteLine($"{sl.start}-{sl.end} {sl.location}");
+            }
+            return lastChild ?? sl;
         }
 
         private void ButtonGo_Click(object sender, RoutedEventArgs e)
@@ -201,6 +227,11 @@ namespace FhirPathTesterUWP
             IEnumerable<ITypedElement> prepopulatedValues = null;
             if (xps != null)
             {
+                // before we execute the expression, if there is a property context to run from, navigate to that one fisrt
+                if (!string.IsNullOrEmpty(textboxSourceLocation.Text))
+                {
+                    inputNav = NavigateToContextProperty(evalContext, inputNav, textboxSourceLocation.Text);
+                }
                 try
                 {
                     prepopulatedValues = xps(inputNav, evalContext);
@@ -227,6 +258,38 @@ namespace FhirPathTesterUWP
             }
 
             AppendParseTree();
+        }
+
+        private ITypedElement NavigateToContextProperty(EvaluationContext evalContext, ITypedElement inputNav, string textLocation)
+        {
+            CompiledExpression xps = null;
+            try
+            {
+                xps = FhirPathProcessor._compiler.Compile(textLocation);
+            }
+            catch (Exception ex)
+            {
+                SetResults("Context Expression compilation error:\r\n" + ex.Message, true);
+                return inputNav;
+            }
+
+            IEnumerable<ITypedElement> prepopulatedValues = null;
+            if (xps != null)
+            {
+                try
+                {
+                    prepopulatedValues = xps(inputNav, evalContext);
+                    if (prepopulatedValues.Count() == 1)
+                        return prepopulatedValues.First();
+                }
+                catch (Exception ex)
+                {
+                    SetResults("Context Expression evaluation error:\r\n" + ex.Message);
+                    AppendParseTree();
+                    return inputNav;
+                }
+            }
+            return inputNav;
         }
 
         private void AddHistoryEntry(string content, string expression)
@@ -557,8 +620,9 @@ namespace FhirPathTesterUWP
             textPosition.Text = $"Ln {row} Col {col}";
             if (_locations.Count > 0)
             {
-                string t = _locations.LastOrDefault(c => c.Key < textboxInputXML.SelectionStart).Value;
+                string t = _locations.LastOrDefault(c => c.Key < textboxInputXML.SelectionStart).Value?.location;
                 labelStatus.Text = $"{t}";
+                textboxSourceLocation.Text = $"{t}";
             }
         }
 
@@ -629,6 +693,7 @@ namespace FhirPathTesterUWP
 
         private void TextboxResult_PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
+            return;
             ToolTip temp = ToolTipService.GetToolTip(textboxResult) as ToolTip;
             if (temp != null)
             {
@@ -659,6 +724,42 @@ namespace FhirPathTesterUWP
             ToolTip temp = ToolTipService.GetToolTip(textboxResult) as ToolTip;
             if (temp?.IsOpen == true)
                 temp.IsOpen = false;
+        }
+
+        private void textboxOutputLocation_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+        {
+            // set the cursor in the output to the location here.
+        }
+
+        private void textboxSourceLocation_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
+        {
+
+        }
+
+        private void textboxResult_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (textboxResult.SelectionStart?.Parent is Run run)
+            {
+                if (_tooltipText.ContainsKey(run))
+                {
+                    textboxOutputLocation.Text = _tooltipText[run];
+                    buttonShowContext_Click(buttonShowContext, null);
+                }
+            }
+        }
+
+        private void buttonShowContext_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var kvp in this._locations)
+            {
+                if (kvp.Value.location == textboxOutputLocation.Text)
+                {
+                    textboxInputXML.SelectionStart = kvp.Key;
+                    textboxInputXML.SelectionLength = kvp.Value.end - kvp.Value.start;
+                    break;
+                }
+            }
+
         }
     }
 }

@@ -177,7 +177,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition MinHeight="100"/>
                         <RowDefinition Height="11"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition MinWidth="200"/>
@@ -212,7 +213,7 @@
                     <!--Column Grid Splitter -->
                     <controls:GridSplitter 
                             Grid.Column="1"
-                            Grid.RowSpan="3"
+                            Grid.RowSpan="4"
                             Width="11"
                             ResizeBehavior="BasedOnAlignment"
                             ResizeDirection="Columns"
@@ -231,9 +232,9 @@
                         </controls:GridSplitter.Element>
                     </controls:GridSplitter>
                     <ScrollViewer Grid.Column="0" Grid.Row="2" >
-                        <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" PointerMoved="TextboxResult_PointerMoved" PointerExited="TextboxResult_PointerExited"  />
+                        <RichTextBlock x:Name="textboxResult" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" PointerMoved="TextboxResult_PointerMoved" PointerExited="TextboxResult_PointerExited" SelectionChanged="textboxResult_SelectionChanged" />
                     </ScrollViewer>
-                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json"  IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
+                    <TextBox x:Name="textboxInputXML" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" Drop="textboxInputXML_Drop" DragOver="textboxInputXML_DragOver" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionChanged="TextboxInputXML_SelectionChanged" PlaceholderText="FHIR Resource xml/json"  IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" SelectionHighlightColorWhenNotFocused="{ThemeResource SystemControlDisabledChromeHighBrush}" />
                     <!--Row Grid Splitter-->
                     <controls:GridSplitter 
             Foreground="White"
@@ -268,6 +269,9 @@
                     <ScrollViewer x:Name="markdownHost" Visibility="Collapsed" Grid.Column="0" Grid.RowSpan="3"  >
                         <controls:MarkdownTextBlock Padding="12" x:Name="markdownAboutBox" Text="Loading ..." ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     </ScrollViewer>
+                    <TextBox Grid.Column="0" Grid.Row="3" x:Name="textboxOutputLocation" Text="outputLocation" DoubleTapped="textboxOutputLocation_DoubleTapped" IsDoubleTapEnabled="True" />
+                    <Button x:Name="buttonShowContext" Grid.Row="3" Grid.Column="0" Content="show" HorizontalAlignment="Right" Click="buttonShowContext_Click" />
+                    <TextBox Grid.Column="2" Grid.Row="3" x:Name="textboxSourceLocation" Text="sourceLocation" IsReadOnly="True" DoubleTapped="textboxSourceLocation_DoubleTapped" IsDoubleTapEnabled="True"  />
                 </Grid>
             </Frame>
         </NavigationView>

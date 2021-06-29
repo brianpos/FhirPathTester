@@ -6,6 +6,15 @@ fhirpath expressions with R4, STU3 and DSTU2 [HL7 FHIR][fhir-spec] resources.
 It can execute the expressions as either an extract (for use in search 
 expressions) or validate (for use in StructureDefinition constraints)
 
+New Features in v1.1.13:
+
+* Now supports HL7 FHIR v4.0.1
+* Updated to HL7 FHIR NuGet packages 1.9.0 (last one compatible with DSTU2)
+* Now supporting context based processing for testing invariant expressions and Structured Data Capture (SDC) expressions
+  * click on the item in the source pane (right side) to set the context once parsed/extracted to set context (shown in bottom right)
+* Double clicking an item in the output will highlight where it came from in the source document (experimental)
+* 
+
 New Features in v1.0.8:
 
 * Full support for R4
