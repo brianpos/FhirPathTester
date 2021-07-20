@@ -457,6 +457,12 @@ namespace FhirPathTesterUWP
                         }
                         e.Handled = true;
                     }
+                    if (formats.Contains(StandardDataFormats.Text))
+                    {
+                        var contents = await e.DataView.GetDataAsync(StandardDataFormats.Text) as string;
+                        textboxInputXML.Text = contents;
+                        AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
+                    }
                 }
             }
             catch (Exception ex)
@@ -467,6 +473,15 @@ namespace FhirPathTesterUWP
 
         private void textboxInputXML_DragOver(object sender, DragEventArgs e)
         {
+            if (e.DataView != null)
+            {
+                var formats = e.DataView.AvailableFormats;
+                if (formats.Contains(StandardDataFormats.Text))
+                {
+                    e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+                    return;
+                }
+            }
             e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy | Windows.ApplicationModel.DataTransfer.DataPackageOperation.Link;
         }
 
