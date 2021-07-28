@@ -62,12 +62,7 @@ namespace FhirPathTesterUWP
                         labelStatus.Text = msg;
                     });
                 });
-            }).ContinueWith(async (Task) => {
-                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => 
-                {
-                    textboxInputXML.Text += "done";
-                });
-            }).ConfigureAwait(true);
+            });
         }
 
         public ObservableCollection<HistoryItemDetails> HistoryItems { get; set; }
@@ -282,7 +277,8 @@ namespace FhirPathTesterUWP
 
         private void AppendTraceResults()
         {
-            AppendResults("=== TRACE ===");
+            if (_traceData.Any())
+                AppendResults("=== TRACE ===");
             foreach (var kvp in _traceData.ToArray())
             {
                 Action<string, bool, string> produceResult = (text, error, tooltip) =>
@@ -553,6 +549,8 @@ namespace FhirPathTesterUWP
 
         private void NotifyUser(string message)
         {
+            if (message == null)
+                message = "";
             labelStatus.Text = message;
         }
 
