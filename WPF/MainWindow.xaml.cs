@@ -75,19 +75,30 @@ namespace FhirPathTester
             else
                 labelDSTU2.Visibility = Visibility.Collapsed;
 
+            _traceData.Clear();
             if (inputNavR4 != null)
             {
                 evalContext = new fp4.FhirEvaluationContext(inputNavR4);
+                evalContext.Tracer += TraceExcutionCall;
                 return inputNavR4;
             }
             if (inputNavSTU3 != null)
             {
                 evalContext = new fp3.FhirEvaluationContext(inputNavSTU3);
+                evalContext.Tracer += TraceExcutionCall;
                 return inputNavSTU3;
             }
             evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
+            evalContext.Tracer += TraceExcutionCall;
             return inputNavDSTU2;
         }
+
+        private void TraceExcutionCall(string key, IEnumerable<ITypedElement> values)
+        {
+            _traceData.Add(new KeyValuePair<string, IEnumerable<ITypedElement>>(key, values));
+            System.Diagnostics.Trace.WriteLine($"key: ???");
+        }
+        private List<KeyValuePair<string, IEnumerable<ITypedElement>>> _traceData = new List<KeyValuePair<string, IEnumerable<ITypedElement>>>();
 
         private void ButtonGo_Click(object sender, RoutedEventArgs e)
         {

@@ -139,19 +139,30 @@ namespace FhirPathTesterUWP
             else
                 btnDSTU2.Visibility = Visibility.Collapsed;
 
+            _traceData.Clear();
             if (inputNavR4 != null)
             {
                 evalContext = new fp4.FhirEvaluationContext(inputNavR4);
+                evalContext.Tracer += TraceExcutionCall;
                 return inputNavR4;
             }
             if (inputNavSTU3 != null)
             {
                 evalContext = new fp3.FhirEvaluationContext(inputNavSTU3);
+                evalContext.Tracer += TraceExcutionCall;
                 return inputNavSTU3;
             }
             evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
+            evalContext.Tracer += TraceExcutionCall;
             return inputNavDSTU2;
         }
+
+        private void TraceExcutionCall(string key, IEnumerable<ITypedElement> values)
+        {
+            _traceData.Add(new KeyValuePair<string, IEnumerable<ITypedElement>>(key, values));
+            System.Diagnostics.Trace.WriteLine($"key: ???");
+        }
+        private List<KeyValuePair<string, IEnumerable<ITypedElement>>> _traceData = new List<KeyValuePair<string, IEnumerable<ITypedElement>>>();
 
         private SourceLocation AddLocations(ISourceNode node, ref IPositionInfo lastNode, ref int lastCharPos, char[] chars)
         {
@@ -257,7 +268,33 @@ namespace FhirPathTesterUWP
                 }
             }
 
+            AppendTraceResults();
             AppendParseTree();
+        }
+
+        private void AppendTraceResults()
+        {
+            AppendResults("=== TRACE ===");
+            foreach (var kvp in _traceData.ToArray())
+            {
+                Action<string, bool, string> produceResult = (text, error, tooltip) =>
+                {
+                    AppendResults($"{kvp.Key}: " + text, false, tooltip);
+                };
+                Func<string, string, string> appendTrace = (fragment, tooltip) =>
+                {
+                    if (fragment.Length > 100)
+                    {
+                        // pretty print the content
+                        var doc = System.Xml.Linq.XDocument.Parse(fragment);
+                        fragment = doc.ToString(System.Xml.Linq.SaveOptions.None);
+                    }
+                    AppendResults($"{kvp.Key}: " + fragment.Replace(" xmlns=\"http://hl7.org/fhir\"", ""), false, tooltip);
+                    return fragment;
+                };
+
+                FhirPathProcessor.ProcessPrepopulatedValues(kvp.Value, appendTrace, produceResult);
+            }
         }
 
         private ITypedElement NavigateToContextProperty(EvaluationContext evalContext, ITypedElement inputNav, string textLocation)
@@ -407,6 +444,7 @@ namespace FhirPathTesterUWP
                 }
             }
 
+            AppendTraceResults();
             AppendParseTree();
         }
 
@@ -457,6 +495,12 @@ namespace FhirPathTesterUWP
                         }
                         e.Handled = true;
                     }
+                    if (formats.Contains(StandardDataFormats.Text))
+                    {
+                        var contents = await e.DataView.GetDataAsync(StandardDataFormats.Text) as string;
+                        textboxInputXML.Text = contents;
+                        AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
+                    }
                 }
             }
             catch (Exception ex)
@@ -467,6 +511,15 @@ namespace FhirPathTesterUWP
 
         private void textboxInputXML_DragOver(object sender, DragEventArgs e)
         {
+            if (e.DataView != null)
+            {
+                var formats = e.DataView.AvailableFormats;
+                if (formats.Contains(StandardDataFormats.Text))
+                {
+                    e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy;
+                    return;
+                }
+            }
             e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Copy | Windows.ApplicationModel.DataTransfer.DataPackageOperation.Link;
         }
 
