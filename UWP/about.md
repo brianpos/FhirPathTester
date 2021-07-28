@@ -6,6 +6,10 @@ fhirpath expressions with R4, STU3 and DSTU2 [HL7 FHIR][fhir-spec] resources.
 It can execute the expressions as either an extract (for use in search 
 expressions) or validate (for use in StructureDefinition constraints)
 
+New Features in v1.1.14:
+
+* Drag and drop plain text from outside the application (not just files/web references)
+
 New Features in v1.1.13:
 
 * Now supports HL7 FHIR v4.0.1

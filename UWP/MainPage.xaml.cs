@@ -55,12 +55,19 @@ namespace FhirPathTesterUWP
             // and remember the initial state
             AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
             System.Threading.Tasks.Task.Run(() => {
-                // in the background load up the 3 sets of ClassLibraries
-                r4.Hl7.Fhir.Serialization.BaseFhirParser.Inspector.Import(typeof(r4.Hl7.Fhir.Serialization.BaseFhirParser).Assembly);
-                // stu3.Hl7.Fhir.Serialization.BaseFhirParser.Inspector.Import(typeof(stu3.Hl7.Fhir.Serialization.BaseFhirParser).Assembly);
-                dstu2.Hl7.Fhir.Serialization.BaseFhirParser.Inspector.Import(typeof(dstu2.Hl7.Fhir.Serialization.BaseFhirParser).Assembly);
-                FhirPathProcessor.GetResourceNavigatorSTU3("<Patient xmlns=\"http://hl7.org/fhir\"/>", out var errs);
-            });
+                CoreModelsPreLoad.Preload(async (msg)=> 
+                {
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        labelStatus.Text = msg;
+                    });
+                });
+            }).ContinueWith(async (Task) => {
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => 
+                {
+                    textboxInputXML.Text += "done";
+                });
+            }).ConfigureAwait(true);
         }
 
         public ObservableCollection<HistoryItemDetails> HistoryItems { get; set; }
@@ -218,6 +225,7 @@ namespace FhirPathTesterUWP
 
         private void ButtonGo_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUser(null);
             EvaluationContext evalContext;
             var inputNav = GetResourceNavigator(out evalContext);
             if (inputNav == null)
@@ -412,6 +420,8 @@ namespace FhirPathTesterUWP
 
         private void ButtonPredicate_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUser(null);
+
             EvaluationContext evalContext;
             var inputNav = GetResourceNavigator(out evalContext);
             if (inputNav == null)
@@ -548,6 +558,7 @@ namespace FhirPathTesterUWP
 
         private void ButtonCheckExpression_Click(object sender, RoutedEventArgs e)
         {
+            NotifyUser(null);
             EvaluationContext evalContext;
             var inputNav = GetResourceNavigator(out evalContext);
             if (inputNav == null)
