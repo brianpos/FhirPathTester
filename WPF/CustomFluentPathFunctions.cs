@@ -14,6 +14,7 @@ using Hl7.FhirPath.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 
 namespace FhirPathTester
 {
@@ -453,6 +454,74 @@ namespace FhirPathTester
             return Children(this, _value, name);
             //var result = Children(this, _value, name).ToList();
             //return result;
+        }
+        #endregion
+    }
+
+    public class NonFhirXmlNode : ITypedElement
+    {
+        public NonFhirXmlNode(string xml)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
+            _value = doc.DocumentElement;
+        }
+
+        private NonFhirXmlNode(NonFhirXmlNode parent, string propName, XmlElement value)
+        {
+            _propName = propName;
+            _parent = parent;
+            _value = value;
+        }
+
+        string _propName;
+        NonFhirXmlNode _parent;
+        public XmlElement _value;
+
+        #region << ITypedElement members >>
+        public string Name => _value.Name;
+
+        public string InstanceType => "String"; // unless we get a DSD to get type data from
+
+        public object Value => _value.GetAttribute("value");
+
+        public string Location
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_parent?.Location) && _parent?.Location != "root")
+                    return _parent.Location + "." + _propName;
+                return _propName ?? Name;
+            }
+        }
+
+        public IElementDefinitionSummary Definition => throw new NotImplementedException();
+
+        public IEnumerable<ITypedElement> Children(string name = null)
+        {
+            // return Children(this, _value, name);
+            var result = Children(this, _value, name).ToList();
+            return result;
+        }
+
+        private IEnumerable<ITypedElement> Children(NonFhirXmlNode nonFhirXmlNode, XmlElement value, string name)
+        {
+            string lastPropName = null;
+            int arrayIndex = 0;
+            foreach (XmlNode child in value.ChildNodes)
+            {
+                if (child.Name == lastPropName)
+                    arrayIndex++;
+                else
+                {
+                    lastPropName = child.Name;
+                    arrayIndex = 0;
+                }
+                if (!string.IsNullOrEmpty(name) && child.Name != name)
+                    continue;
+                if (child is XmlElement xe)
+                    yield return new NonFhirXmlNode(this, $"{child.Name}[{arrayIndex}]", xe);
+            }
         }
         #endregion
     }

@@ -154,9 +154,33 @@ namespace FhirPathTesterUWP
                 evalContext.Tracer += TraceExcutionCall;
                 return inputNavSTU3;
             }
+            if (inputNavDSTU2 != null)
+            {
             evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
             evalContext.Tracer += TraceExcutionCall;
             return inputNavDSTU2;
+        }
+
+            // This isn't a FHIR object, so fall back to raw JSON
+            if (textboxInputXML.Text.StartsWith("{"))
+            {
+                var jsonRawObj = JObject.Parse(textboxInputXML.Text);
+                var wrappedRaw = new NonFhirJSonNode(jsonRawObj);
+                evalContext = new EvaluationContext(wrappedRaw);
+                evalContext.Tracer += TraceExcutionCall;
+                return wrappedRaw;
+            }
+            // This isn't a FHIR object, so fall back to raw JSON
+            if (textboxInputXML.Text.StartsWith("<"))
+            {
+                var wrappedRaw = new NonFhirXmlNode(textboxInputXML.Text);
+                evalContext = new EvaluationContext(wrappedRaw);
+                evalContext.Tracer += TraceExcutionCall;
+                return wrappedRaw;
+            }
+
+            evalContext = null;
+            return null;
         }
 
         private void TraceExcutionCall(string key, IEnumerable<ITypedElement> values)
@@ -248,7 +272,7 @@ namespace FhirPathTesterUWP
                 }
                 try
                 {
-                    prepopulatedValues = xps(inputNav, evalContext);
+                    prepopulatedValues = xps(inputNav, evalContext).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -319,7 +343,7 @@ namespace FhirPathTesterUWP
             {
                 try
                 {
-                    prepopulatedValues = xps(inputNav, evalContext);
+                    prepopulatedValues = xps(inputNav, evalContext).ToList();
                     if (prepopulatedValues.Count() == 1)
                         return prepopulatedValues.First();
                 }
