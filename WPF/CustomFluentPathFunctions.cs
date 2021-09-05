@@ -76,7 +76,7 @@ namespace FhirPathTester
                         return f.Select(it => it.Value as string)
                             .Where(s => !string.IsNullOrEmpty(s))
                             .SelectMany(s => System.Text.RegularExpressions.Regex.Split(s, @"\s+"))
-                            .SelectMany(word => ElementNode.CreateList(mp.BuildKey(word)) );
+                            .SelectMany(word => ElementNode.CreateList(mp.BuildKey(word)));
                     });
                     _st.Add("Metaphone", (IEnumerable<ITypedElement> f) =>
                     {
@@ -332,6 +332,127 @@ namespace FhirPathTester
                 return new[] { this };
             else
                 return Current.Annotations(type);
+        }
+        #endregion
+    }
+
+    public class NonFhirJSonNode : ITypedElement //, IAnnotated
+    {
+        public NonFhirJSonNode(Newtonsoft.Json.Linq.JObject value)
+        {
+            _value = value;
+        }
+
+        private NonFhirJSonNode(NonFhirJSonNode parent, string propName, Newtonsoft.Json.Linq.JToken value)
+        {
+            _propName = propName;
+            _parent = parent;
+            _value = value;
+        }
+
+        NonFhirJSonNode _parent;
+        Newtonsoft.Json.Linq.JToken _value;
+        string _propName;
+
+        #region << ITypedElement members >>
+        public string Name
+        {
+            get
+            {
+                if (_propName?.Contains("[") == true)
+                {
+                    return _propName.Substring(0, _propName.IndexOf("["));
+                }
+                return _propName;
+            }
+        }
+
+        public string InstanceType
+        {
+            get
+            {
+                if (_value is Newtonsoft.Json.Linq.JObject jo)
+                {
+                    return jo.Type.ToString();
+                }
+                if (_value is Newtonsoft.Json.Linq.JProperty jp)
+                {
+                    return jp.Value.Type.ToString();
+                }
+                return _value.Type.ToString();
+            }
+        }
+
+        public object Value
+        {
+            get
+            {
+                if (_value is Newtonsoft.Json.Linq.JValue jv)
+                    return jv.Value;
+                if (_value is Newtonsoft.Json.Linq.JProperty jp)
+                    return jp.Value;
+                return _value;
+            }
+        }
+
+        public string Location
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_parent?.Location) && _parent?.Location != "root")
+                    return _parent.Location + "." + _propName;
+                return _propName ?? "root";
+            }
+        }
+
+        public IElementDefinitionSummary Definition => throw new NotImplementedException();
+
+        private static IEnumerable<ITypedElement> Children(NonFhirJSonNode parent, Newtonsoft.Json.Linq.JToken value, string name)
+        {
+            if (value is Newtonsoft.Json.Linq.JProperty jp)
+            {
+                if (!string.IsNullOrEmpty(name) && name != jp.Name)
+                    yield break;
+                foreach (var propValue in Children(parent, jp.Value, name))
+                    yield return propValue;
+            }
+            else if (value is Newtonsoft.Json.Linq.JValue jv)
+            {
+                if (jv.Parent is Newtonsoft.Json.Linq.JProperty jp2)
+                {
+                    if (!string.IsNullOrEmpty(name) && name != jp2.Name)
+                        yield break;
+                    yield return new NonFhirJSonNode(parent, jp2.Name, value);
+                }
+            }
+            else if (value is Newtonsoft.Json.Linq.JArray ja)
+            {
+                if (ja.Parent is Newtonsoft.Json.Linq.JProperty jp2)
+                {
+                    if (!string.IsNullOrEmpty(name) && name != jp2.Name)
+                        yield break;
+                    for (int n = 0; n < ja.Count; n++)
+                    {
+                        var arrayItem = ja[n];
+                        yield return new NonFhirJSonNode(parent, $"{jp2.Name}[{n}]", arrayItem);
+                    }
+                }
+            }
+            else if (value is Newtonsoft.Json.Linq.JObject jo)
+            {
+                foreach (var p in jo.Properties())
+                {
+                    foreach (var propValue in Children(parent, p, name))
+                        yield return propValue;
+                }
+            }
+        }
+
+        public IEnumerable<ITypedElement> Children(string name = null)
+        {
+            return Children(this, _value, name);
+            //var result = Children(this, _value, name).ToList();
+            //return result;
         }
         #endregion
     }
