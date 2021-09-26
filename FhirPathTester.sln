@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1F031D9D-52AB-48BA-8A86-026709005F31}"
 	ProjectSection(SolutionItems) = preProject
 		contributors.md = contributors.md
+		fhirpathtester.ico = fhirpathtester.ico
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection
