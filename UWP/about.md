@@ -6,6 +6,13 @@ fhirpath expressions with R4, STU3 and DSTU2 [HL7 FHIR][fhir-spec] resources.
 It can execute the expressions as either an extract (for use in search 
 expressions) or validate (for use in StructureDefinition constraints)
 
+New Features in v1.2.0:
+
+* Updated to recent HL7 FHIR NuGet pacakges 3.6.0 (including support for fhirpath aggregte operation)
+* Inclusion of beta FHIR R5 version
+* Removal of FHIR DSTU2 support
+* Custom dateadd function only supports datetime (needs update to core package to support date)
+
 New Features in v1.1.14:
 
 * Drag and drop plain text from outside the application (not just files/web references)

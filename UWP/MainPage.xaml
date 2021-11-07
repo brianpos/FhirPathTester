@@ -188,12 +188,13 @@
 
                     <Grid Grid.Column="0" Grid.Row="0">
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
                             <RowDefinition/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <TextBox x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
-
-                        <CommandBar Grid.Row="1" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto" ClosedDisplayMode="Compact" IsDynamicOverflowEnabled="False">
+                        <TextBox x:Name="textboxExpressionContext"  FontSize="{Binding TextControlFontSize, Mode=TwoWay}" PlaceholderText="FHIR Path Expression Context" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
+                        <TextBox Grid.Row="1" x:Name="textboxExpression"  AcceptsReturn="True" FontSize="{Binding TextControlFontSize, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto" PlaceholderText="FHIR Path Expression" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" Style="{StaticResource TextBoxStyleBlack}" />
+                        <CommandBar Grid.Row="2" DefaultLabelPosition="Right" HorizontalAlignment="Left" HorizontalContentAlignment="Left" FlowDirection="LeftToRight" UseLayoutRounding="True" OverflowButtonVisibility="Auto" ClosedDisplayMode="Compact" IsDynamicOverflowEnabled="False">
                             <AppBarButton Icon="Download" Label="Extract" Click="ButtonGo_Click" AccessKey="E" ToolTipService.ToolTip="Use the fhirpath expression above to extract the data from the resource on the right (Ctrl+E)" >
                                 <AppBarButton.KeyboardAccelerators>
                                     <KeyboardAccelerator Modifiers="Control" Key="E"/>
@@ -285,9 +286,9 @@
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" >
                 <TextBlock x:Name="textPosition" Padding="4,0" Text="Ln 0 Col 0" VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="4,0">
-                    <TextBlock x:Name="btnDSTU2" Padding="4,0" Text="DSTU2" ToolTipService.ToolTip="The resource on the right parses with the DSTU2 parser"/>
                     <TextBlock x:Name="btnSTU3" Padding="4,0" Text="STU3" ToolTipService.ToolTip="The resource on the right parses with the STU3 parser"/>
                     <TextBlock x:Name="btnR4" Padding="4,0" Text="R4" ToolTipService.ToolTip="The resource on the right parses with the R4 parser"/>
+                    <TextBlock x:Name="btnR5" Padding="4,0" Text="R5" ToolTipService.ToolTip="The resource on the right parses with the R5 parser"/>
                 </StackPanel>
                 <Button Width="24" Content="-" Padding="0" Click="Button_Click"/>
                 <Slider x:Name="sliderFontSize" Width="100" Value="{Binding TextControlFontSize, Mode=TwoWay}" Minimum="8" Maximum="76" Padding="6,0" />

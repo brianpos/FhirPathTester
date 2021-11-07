@@ -4,7 +4,7 @@
          xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" 
          xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
          IgnorableNamespaces="uap mp">
-  <Identity Name="28271Phone7onmymind.fhirpathtester" Publisher="CN=D4BBCF0A-BDD3-48F5-9390-1575A696F90B" Version="1.1.14.0" />
+  <Identity Name="28271Phone7onmymind.fhirpathtester" Publisher="CN=D4BBCF0A-BDD3-48F5-9390-1575A696F90B" Version="1.2.0.0" />
   <mp:PhoneIdentity PhoneProductId="0750e24a-f141-4525-b1b1-7d896dde70b9" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>fhirpath tester</DisplayName>

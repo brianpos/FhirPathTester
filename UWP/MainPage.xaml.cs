@@ -1,4 +1,4 @@
-﻿extern alias dstu2;
+﻿extern alias r5;
 extern alias stu3;
 extern alias r4;
 // https://github.com/NuGet/Home/issues/4989#issuecomment-311042085
@@ -12,15 +12,6 @@ using Windows.UI.Xaml.Controls;
 
 using Hl7.Fhir.ElementModel;
 
-using fp2 = dstu2.Hl7.Fhir.FhirPath;
-using f2 = dstu2.Hl7.Fhir.Model;
-
-using fp3 = stu3.Hl7.Fhir.FhirPath;
-using f3 = stu3.Hl7.Fhir.Model;
-
-using fp4 = r4.Hl7.Fhir.FhirPath;
-using f4 = r4.Hl7.Fhir.Model;
-
 using Hl7.FhirPath;
 using Hl7.FhirPath.Expressions;
 using System.Text;
@@ -29,12 +20,11 @@ using FhirPathTester;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 using System.Net.Http;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using Windows.ApplicationModel;
 using Hl7.Fhir.Utility;
-using Windows.Devices.Perception;
+using Hl7.Fhir.FhirPath;
 
 namespace FhirPathTesterUWP
 {
@@ -54,15 +44,9 @@ namespace FhirPathTesterUWP
 
             // and remember the initial state
             AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
-            System.Threading.Tasks.Task.Run(() => {
-                CoreModelsPreLoad.Preload(async (msg)=> 
-                {
-                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                    {
-                        labelStatus.Text = msg;
-                    });
-                });
-            });
+
+            // disable the code gen support (as the Windows store doesn't support it)
+            PropertyInfoExtensions.NoCodeGenSupport = true;
         }
 
         public ObservableCollection<HistoryItemDetails> HistoryItems { get; set; }
@@ -99,7 +83,7 @@ namespace FhirPathTesterUWP
         private ITypedElement GetResourceNavigator(out EvaluationContext evalContext)
         {
             string parseErrors2;
-            var inputNavDSTU2 = FhirPathProcessor.GetResourceNavigatorDSTU2(textboxInputXML.Text, out parseErrors2);
+            var inputNavR5 = FhirPathProcessor.GetResourceNavigatorR5(textboxInputXML.Text, out parseErrors2);
             string parseErrors3;
             var inputNavSTU3 = FhirPathProcessor.GetResourceNavigatorSTU3(textboxInputXML.Text, out parseErrors3);
             string parseErrors4;
@@ -110,7 +94,7 @@ namespace FhirPathTesterUWP
                 ResetResults();
                 AppendResults(String.Join("\r\n--------------------\r\n", parseErrors2, parseErrors3, parseErrors4), true);
             }
-            if (inputNavR4 != null || inputNavSTU3 != null || inputNavDSTU2 != null)
+            if (inputNavR4 != null || inputNavSTU3 != null || inputNavR5 != null)
             {
                 ISourceNode node;
                 if (textboxInputXML.Text.StartsWith("{"))
@@ -136,29 +120,29 @@ namespace FhirPathTesterUWP
             else
                 btnSTU3.Visibility = Visibility.Collapsed;
 
-            if (inputNavDSTU2 != null)
-                btnDSTU2.Visibility = Visibility.Visible;
+            if (inputNavR5 != null)
+                btnR5.Visibility = Visibility.Visible;
             else
-                btnDSTU2.Visibility = Visibility.Collapsed;
+                btnR5.Visibility = Visibility.Collapsed;
 
             _traceData.Clear();
             if (inputNavR4 != null)
             {
-                evalContext = new fp4.FhirEvaluationContext(inputNavR4);
+                evalContext = new FhirEvaluationContext(inputNavR4);
                 evalContext.Tracer += TraceExcutionCall;
                 return inputNavR4;
             }
             if (inputNavSTU3 != null)
             {
-                evalContext = new fp3.FhirEvaluationContext(inputNavSTU3);
+                evalContext = new FhirEvaluationContext(inputNavSTU3);
                 evalContext.Tracer += TraceExcutionCall;
                 return inputNavSTU3;
             }
-            if (inputNavDSTU2 != null)
+            if (inputNavR5 != null)
             {
-            evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
+            evalContext = new FhirEvaluationContext(inputNavR5);
             evalContext.Tracer += TraceExcutionCall;
-            return inputNavDSTU2;
+            return inputNavR5;
         }
 
             // This isn't a FHIR object, so fall back to raw JSON
@@ -266,9 +250,9 @@ namespace FhirPathTesterUWP
             if (xps != null)
             {
                 // before we execute the expression, if there is a property context to run from, navigate to that one fisrt
-                if (!string.IsNullOrEmpty(textboxSourceLocation.Text))
+                if (!string.IsNullOrEmpty(textboxExpressionContext.Text))
                 {
-                    inputNav = NavigateToContextProperty(evalContext, inputNav, textboxSourceLocation.Text);
+                    inputNav = NavigateToContextProperty(evalContext, inputNav, textboxExpressionContext.Text);
                 }
                 try
                 {
@@ -426,13 +410,14 @@ namespace FhirPathTesterUWP
             else if (expr is ConstantExpression)
             {
                 var func = expr as ConstantExpression;
-                sb.AppendFormat("{0}{1} (constant)\r\n", prefix, func.Value.ToString());
+                sb.AppendFormat("{0}{1} (constant: {2})\r\n", prefix, func.Value.ToString(), func.ExpressionType.FullName);
                 return;
             }
             else if (expr is VariableRefExpression)
             {
                 var func = expr as VariableRefExpression;
-                // sb.AppendFormat("{0}{1} (variable ref)\r\n", prefix, func.Name);
+                if (func.Name?.StartsWith("builtin") == false)
+                    sb.AppendFormat("{0}%{1} (variable ref)\r\n", prefix, func.Name);
                 return;
             }
             sb.Append(expr.GetType().ToString());
@@ -461,6 +446,11 @@ namespace FhirPathTesterUWP
 
             if (xps != null)
             {
+                // before we execute the expression, if there is a property context to run from, navigate to that one fisrt
+                if (!string.IsNullOrEmpty(textboxExpressionContext.Text))
+                {
+                    inputNav = NavigateToContextProperty(evalContext, inputNav, textboxExpressionContext.Text);
+                }
                 try
                 {
                     AddHistoryEntry(textboxInputXML.Text, textboxExpression.Text);
@@ -819,7 +809,7 @@ namespace FhirPathTesterUWP
 
         private void textboxSourceLocation_DoubleTapped(object sender, Windows.UI.Xaml.Input.DoubleTappedRoutedEventArgs e)
         {
-
+            textboxExpressionContext.Text = textboxSourceLocation.Text;
         }
 
         private void textboxResult_SelectionChanged(object sender, RoutedEventArgs e)

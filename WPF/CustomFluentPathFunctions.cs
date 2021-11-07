@@ -1,25 +1,31 @@
-﻿extern alias dstu2;
+﻿extern alias r5;
 extern alias stu3;
 extern alias r4;
 // https://github.com/NuGet/Home/issues/4989#issuecomment-311042085
 
 using Hl7.Fhir.ElementModel;
-using Hl7.Fhir.Model.Primitives;
 using Hl7.Fhir.Specification;
 using Hl7.Fhir.Utility;
-// using Hl7.Fhir.FluentPath;
-//using Hl7.Fhir.Model;
 using Hl7.FhirPath;
 using Hl7.FhirPath.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using P = Hl7.Fhir.ElementModel.Types;
 
 namespace FhirPathTester
 {
     public class CustomFluentPathFunctions
     {
+        static public P.Date Add(P.Date me, P.Quantity value)
+        {
+            var result = me;
+            // me.Years;
+
+            return result;
+        }
+
         static private SymbolTable _st;
         static public SymbolTable Scope
         {
@@ -29,6 +35,8 @@ namespace FhirPathTester
                 {
                     _st = new SymbolTable().AddStandardFP();
                     // _st.Add("rand", (object f) => { return "slim"; });
+
+                    _st.Add("binary.+", (object f, P.Date a, P.Quantity b) => Add(a, b), doNullProp: true);
 
                     // Custom function that returns the name of the property, rather than its value
                     _st.Add("propname", (object f) =>
@@ -125,13 +133,10 @@ namespace FhirPathTester
                     });
 
                     // Custom function for evaluating the date operation (custom Healthconnex)
-                    _st.Add("dateadd", (PartialDateTime f, string field, long amount) =>
+                    _st.Add("dateadd", (Hl7.Fhir.ElementModel.Types.DateTime me, string field, long amount) =>
                     {
-                        DateTimeOffset dto = f.ToUniversalTime();
+                        DateTimeOffset dto = me.ToDateTimeOffset(DateTimeOffset.Now.Offset);
                         int value = (int)amount;
-
-                        // Need to convert the amount and field to compensate for partials
-                        //TimeSpan ts = new TimeSpan();
 
                         switch (field)
                         {
@@ -142,8 +147,54 @@ namespace FhirPathTester
                             case "mi": dto = dto.AddMinutes(value); break;
                             case "ss": dto = dto.AddSeconds(value); break;
                         }
-                        PartialDateTime changedDate = PartialDateTime.Parse(PartialDateTime.FromDateTime(dto).ToString().Substring(0, f.ToString().Length));
-                        return changedDate;
+
+                        string representation = dto.ToString(Hl7.Fhir.ElementModel.Types.DateTime.FMT_FULL);
+                        if (representation.Length > me.ToString().Length)
+                        {
+                            // need to trim appropriately.
+                            if (me.Precision <= Hl7.Fhir.ElementModel.Types.DateTimePrecision.Minute)
+                                representation = representation.Substring(0, me.ToString().Length);
+                            else
+                            {
+                                if (!me.HasOffset)
+                                {
+                                    // trim the offset from it
+                                    representation = dto.ToString("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF");
+                                }
+                            }
+                        }
+
+                        Hl7.Fhir.ElementModel.Types.DateTime changedDate;
+                        if (Hl7.Fhir.ElementModel.Types.DateTime.TryParse(representation, out changedDate))
+                            return changedDate;
+                        return null;
+                    });
+                    _st.Add("dateadd", (Hl7.Fhir.ElementModel.Types.Date me, string field, long amount) =>
+                    {
+                        DateTimeOffset dto = me.ToDateTime().ToDateTimeOffset(DateTimeOffset.Now.Offset);
+                        int value = (int)amount;
+
+                        switch (field)
+                        {
+                            case "yy": dto = dto.AddYears(value); break;
+                            case "mm": dto = dto.AddMonths(value); break;
+                            case "dd": dto = dto.AddDays(value); break;
+                            case "hh": dto = dto.AddHours(value); break;
+                            case "mi": dto = dto.AddMinutes(value); break;
+                            case "ss": dto = dto.AddSeconds(value); break;
+                        }
+
+                        string representation = dto.ToString(Hl7.Fhir.ElementModel.Types.DateTime.FMT_FULL);
+                        if (representation.Length > me.ToString().Length)
+                        {
+                            // need to trim appropriately.
+                            representation = representation.Substring(0, me.ToString().Length);
+                        }
+
+                        Hl7.Fhir.ElementModel.Types.Date changedDate;
+                        if (Hl7.Fhir.ElementModel.Types.Date.TryParse(representation, out changedDate))
+                            return changedDate;
+                        return null;
                     });
 
                     // Custom LUHN Checksum algorithm
@@ -229,24 +280,20 @@ namespace FhirPathTester
                 // Needs to consider that the index might be irrelevant
                 if (ShortPath.EndsWith("]"))
                 {
-                    Hl7.Fhir.Model.Base fhirValue = ElementNodeExtensions.Annotation<r4::Hl7.Fhir.ElementModel.IFhirValueProvider>(this)?.FhirValue;
-                    if (fhirValue == null)
-                        fhirValue = ElementNodeExtensions.Annotation<stu3::Hl7.Fhir.ElementModel.IFhirValueProvider>(this)?.FhirValue;
-                    else if (fhirValue == null)
-                        fhirValue = ElementNodeExtensions.Annotation<dstu2::Hl7.Fhir.ElementModel.IFhirValueProvider>(this)?.FhirValue;
-                    if (fhirValue is r4::Hl7.Fhir.Model.Identifier ident)
+                    Hl7.Fhir.Model.Base fhirValue = ElementNodeExtensions.Annotation<Hl7.Fhir.ElementModel.IFhirValueProvider>(this)?.FhirValue;
+                    if (fhirValue is Hl7.Fhir.Model.Identifier ident)
                     {
                         // Need to construct a where clause for this property
                         if (!string.IsNullOrEmpty(ident.System))
                             return $"{parentCommonPath}.{Current.Name}.where(system='{ident.System}')";
                     }
-                    else if (fhirValue is r4::Hl7.Fhir.Model.ContactPoint cp)
+                    else if (fhirValue is Hl7.Fhir.Model.ContactPoint cp)
                     {
                         // Need to construct a where clause for this property
                         if (cp.System.HasValue)
                             return $"{parentCommonPath}.{Current.Name}.where(system='{cp.System.Value.GetLiteral()}')";
                     }
-                    else if (fhirValue is r4::Hl7.Fhir.Model.Coding cd)
+                    else if (fhirValue is Hl7.Fhir.Model.Coding cd)
                     {
                         // Need to construct a where clause for this property
                         if (!string.IsNullOrEmpty(cd.System))
@@ -270,29 +317,13 @@ namespace FhirPathTester
                         if (!string.IsNullOrEmpty(rgc.LinkId))
                             return $"{parentCommonPath}.{Current.Name}.where(linkId='{rgc.LinkId}')";
                     }
-                    else if (fhirValue is r4::Hl7.Fhir.Model.Extension ext4)
+                    else if (fhirValue is Hl7.Fhir.Model.Extension ext4)
                     {
                         // Need to construct a where clause for this property
                         // The extension is different as with fhirpath there
                         // is a shortcut format of .extension('url'), and since
                         // all extensions have a property name of extension, can just at the brackets and string name
                         return $"{parentCommonPath}.{Current.Name}('{ext4.Url}')";
-                    }
-                    else if (fhirValue is stu3::Hl7.Fhir.Model.Extension ext3)
-                    {
-                        // Need to construct a where clause for this property
-                        // The extension is different as with fhirpath there
-                        // is a shortcut format of .extension('url'), and since
-                        // all extensions have a property name of extension, can just at the brackets and string name
-                        return $"{parentCommonPath}.{Current.Name}('{ext3.Url}')";
-                    }
-                    else if (fhirValue is dstu2::Hl7.Fhir.Model.Extension ext2)
-                    {
-                        // Need to construct a where clause for this property
-                        // The extension is different as with fhirpath there
-                        // is a shortcut format of .extension('url'), and since
-                        // all extensions have a property name of extension, can just at the brackets and string name
-                        return $"{parentCommonPath}.{Current.Name}('{ext2.Url}')";
                     }
                     return $"{parentCommonPath}.{LocalLocation}";
                 }

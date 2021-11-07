@@ -1,11 +1,11 @@
-﻿extern alias dstu2;
+﻿extern alias r5;
 extern alias stu3;
 extern alias r4;
 
 using Hl7.Fhir.ElementModel;
 
-using fp2 = dstu2.Hl7.Fhir.FhirPath;
-using f2 = dstu2.Hl7.Fhir.Model;
+using fp2 = r5.Hl7.Fhir.FhirPath;
+using f2 = r5.Hl7.Fhir.Model;
 
 using fp3 = stu3.Hl7.Fhir.FhirPath;
 using f3 = stu3.Hl7.Fhir.Model;
@@ -26,6 +26,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Hl7.Fhir.FhirPath;
 
 namespace FhirPathTester
 {
@@ -49,7 +50,7 @@ namespace FhirPathTester
         private ITypedElement GetResourceNavigator(out EvaluationContext evalContext)
         {
             string parseErrors2;
-            var inputNavDSTU2 = FhirPathProcessor.GetResourceNavigatorDSTU2(textboxInputXML.Text, out parseErrors2);
+            var inputNavDSTU2 = FhirPathProcessor.GetResourceNavigatorR5(textboxInputXML.Text, out parseErrors2);
             string parseErrors3;
             var inputNavSTU3 = FhirPathProcessor.GetResourceNavigatorSTU3(textboxInputXML.Text, out parseErrors3);
             string parseErrors4;
@@ -78,17 +79,17 @@ namespace FhirPathTester
             _traceData.Clear();
             if (inputNavR4 != null)
             {
-                evalContext = new fp4.FhirEvaluationContext(inputNavR4);
+                evalContext = new FhirEvaluationContext(inputNavR4);
                 evalContext.Tracer += TraceExcutionCall;
                 return inputNavR4;
             }
             if (inputNavSTU3 != null)
             {
-                evalContext = new fp3.FhirEvaluationContext(inputNavSTU3);
+                evalContext = new FhirEvaluationContext(inputNavSTU3);
                 evalContext.Tracer += TraceExcutionCall;
                 return inputNavSTU3;
             }
-            evalContext = new fp2.FhirEvaluationContext(inputNavDSTU2);
+            evalContext = new FhirEvaluationContext(inputNavDSTU2);
             evalContext.Tracer += TraceExcutionCall;
             return inputNavDSTU2;
         }

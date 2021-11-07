@@ -19,7 +19,7 @@
     <PackageCertificateKeyFile>
     </PackageCertificateKeyFile>
     <PackageCertificateThumbprint>564D61927A04900DA5DEF39712F2345B686B2A2F</PackageCertificateThumbprint>
-    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
@@ -256,20 +256,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.DSTU2">
-      <Version>1.9.0</Version>
-    </PackageReference>
-    <PackageReference Include="Hl7.Fhir.R4">
-      <Version>1.9.0</Version>
-    </PackageReference>
-    <PackageReference Include="Hl7.Fhir.Serialization">
-      <Version>1.9.0</Version>
-    </PackageReference>
-    <PackageReference Include="Hl7.Fhir.STU3">
-      <Version>1.9.0</Version>
-    </PackageReference>
-    <PackageReference Include="Hl7.FhirPath">
-      <Version>1.9.0</Version>
+    <PackageReference Include="Hl7.Fhir.STU3" Version="3.6.0" Aliases="stu3" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="3.6.0" Aliases="r4" />
+    <PackageReference Include="Hl7.Fhir.R5" Version="3.6.0" Aliases="r5" />
+    <PackageReference Include="Hl7.FhirPath" Version="3.6.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
+      <Version>3.1.19</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.10</Version>
@@ -281,7 +273,7 @@
       <Version>6.1.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.3</Version>
+      <Version>13.0.1</Version>
     </PackageReference>
     <PackageReference Include="Phonix">
       <Version>1.0.1</Version>
@@ -290,25 +282,15 @@
       <Version>1.0.0</Version>
     </PackageReference>
   </ItemGroup>
-  <Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
+  <!--<Target Name="ChangeAliasesOfStrongNameAssemblies" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
     <ItemGroup>
-      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.DSTU2.Core'">
-        <Aliases>dstu2</Aliases>
-      </ReferencePath>
-    </ItemGroup>
-    <ItemGroup>
-      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.STU3.Core'">
-        <Aliases>stu3</Aliases>
+      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.R5.Core'">
+        <Aliases>r5</Aliases>
       </ReferencePath>
     </ItemGroup>
     <ItemGroup>
       <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.R4.Core'">
         <Aliases>r4</Aliases>
-      </ReferencePath>
-    </ItemGroup>
-    <ItemGroup>
-      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.DSTU2.Specification'">
-        <Aliases>dstu2</Aliases>
       </ReferencePath>
     </ItemGroup>
     <ItemGroup>
@@ -321,7 +303,12 @@
         <Aliases>r4</Aliases>
       </ReferencePath>
     </ItemGroup>
-  </Target>
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Hl7.Fhir.R5.Specification'">
+        <Aliases>r5</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>-->
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
