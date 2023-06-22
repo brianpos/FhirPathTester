@@ -4,13 +4,10 @@ extern alias r5;
 
 using Hl7.Fhir.ElementModel;
 
-using fp2 = r5.Hl7.Fhir.FhirPath;
-using f2 = r5.Hl7.Fhir.Model;
+using f5 = r5.Hl7.Fhir.Model;
 
-using fp3 = stu3.Hl7.Fhir.FhirPath;
 using f3 = stu3.Hl7.Fhir.Model;
 
-using fp4 = r4.Hl7.Fhir.FhirPath;
 using f4 = r4.Hl7.Fhir.Model;
 using System;
 using Hl7.FhirPath.Expressions;
@@ -31,28 +28,21 @@ namespace FhirPathTester
     {
         static public Hl7.FhirPath.FhirPathCompiler _compiler = new Hl7.FhirPath.FhirPathCompiler(CustomFluentPathFunctions.Scope);
         static private readonly ParserSettings _parserSettings = new ParserSettings() { PermissiveParsing = true };
+        static internal readonly ModelInspector _mi3 = ModelInspector.ForAssembly(typeof(f3.Patient).Assembly);
+        static internal readonly ModelInspector _mi4 = ModelInspector.ForAssembly(typeof(f4.Patient).Assembly);
+        static internal readonly ModelInspector _mi5 = ModelInspector.ForAssembly(typeof(f5.Patient).Assembly);
 
         public static ITypedElement GetResourceNavigatorR5(string text, out string parseErrors)
         {
-            var provider = new SqliteStructureDefinitionProvider("http://hl7.org/fhir", "2.0.1");
             var tnSettings = new TypedElementSettings() { ErrorMode = TypedElementSettings.TypeErrorMode.Report };
 
-            // f2.Resource resource = null;
-            ITypedElement inputNav = null;
+            Hl7.Fhir.Model.Resource resource = null;
             try
             {
                 if (text.StartsWith("{"))
-                {
-                    var jsonSettings = new FhirJsonParsingSettings() { AllowJsonComments = true, PermissiveParsing = true, ValidateFhirXhtml = false };
-                    inputNav = FhirJsonNode.Parse(text, null, jsonSettings).ToTypedElement(provider, null, tnSettings);
-                    // resource = new r5::Hl7.Fhir.Serialization.FhirJsonParser(new r5::Hl7.Fhir.Serialization.ParserSettings() { PermissiveParsing = true }).Parse<f2.Resource>(text);
-                }
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirJsonParser(_parserSettings).Parse<Hl7.Fhir.Model.Resource>(text);
                 else
-                {
-                    var jsonSettings = new FhirXmlParsingSettings() { PermissiveParsing = true, ValidateFhirXhtml = false };
-                    inputNav = FhirXmlNode.Parse(text, jsonSettings).ToTypedElement(provider, null, tnSettings);
-                    // resource = new r5::Hl7.Fhir.Serialization.FhirXmlParser(new r5::Hl7.Fhir.Serialization.ParserSettings() { PermissiveParsing = true }).Parse<f2.Resource>(text);
-                }
+                    resource = new stu3.Hl7.Fhir.Serialization.FhirXmlParser(_parserSettings).Parse<Hl7.Fhir.Model.Resource>(text);
             }
             catch (Exception ex)
             {
@@ -60,7 +50,7 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            // ITypedElement inputNav = r5::Hl7.Fhir.ElementModel.PocoNavigatorExtensions.ToTypedElement(resource);
+            var inputNav = resource.ToTypedElement(_mi5);
             return new ScopedNode(new SqlonfhirScopedNode(inputNav));
         }
 
@@ -80,7 +70,7 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            var inputNav = TypedSerialization.ToTypedElement(resource);
+            var inputNav = resource.ToTypedElement(_mi3);
             return new ScopedNode(new SqlonfhirScopedNode(inputNav));
         }
         public static ITypedElement GetResourceNavigatorR4(string text, out string parseErrors)
@@ -99,7 +89,7 @@ namespace FhirPathTester
                 return null;
             }
             parseErrors = null;
-            var inputNav = TypedSerialization.ToTypedElement(resource);
+            var inputNav = resource.ToTypedElement(_mi4);
             return new ScopedNode(new SqlonfhirScopedNode(inputNav));
         }
 
@@ -143,7 +133,7 @@ namespace FhirPathTester
             ExpressionElementContext context = new ExpressionElementContext(inputNav.Name);
             if (inputNav is IFhirValueProvider pn)
             {
-                if (pn.FhirValue is f2.Questionnaire q5)
+                if (pn.FhirValue is f5.Questionnaire q5)
                 {
                     context._q2 = q5;
                 }
@@ -189,7 +179,7 @@ namespace FhirPathTester
                     {
                         if (func.ChildName == "group")
                         {
-                            childContext._2gs = new List<f2.Questionnaire.ItemComponent>();
+                            childContext._2gs = new List<f5.Questionnaire.ItemComponent>();
                             childContext._2gs.AddRange(focusContext._q2.Item);
                         }
                     }
@@ -222,7 +212,7 @@ namespace FhirPathTester
                     {
                         if (func.ChildName == "item")
                         {
-                            childContext._2gs = new List<f2.Questionnaire.ItemComponent>();
+                            childContext._2gs = new List<f5.Questionnaire.ItemComponent>();
                             foreach (var item in focusContext._2gs)
                             {
                                 if (item.Item != null)
@@ -505,7 +495,7 @@ namespace FhirPathTester
                 {
                     try
                     {
-                        _cm4 = new List<ClassMapping>() { ClassMapping.Create(t4) };
+                        _cm4 = new List<ClassMapping>() { FhirPathProcessor._mi4.FindOrImportClassMapping(t4) };
                     }
                     catch
                     {
@@ -516,7 +506,7 @@ namespace FhirPathTester
                 {
                     try
                     {
-                        _cm3 = new List<ClassMapping>() { ClassMapping.Create(t3) };
+                        _cm3 = new List<ClassMapping>() { FhirPathProcessor._mi3.FindOrImportClassMapping(t3) };
                     }
                     catch
                     {
@@ -527,7 +517,7 @@ namespace FhirPathTester
                 {
                     try
                     {
-                        _cm2 = new List<ClassMapping>() { ClassMapping.Create(t2) };
+                        _cm2 = new List<ClassMapping>() { FhirPathProcessor._mi5.FindOrImportClassMapping(t2) };
                     }
                     catch
                     {
@@ -544,11 +534,11 @@ namespace FhirPathTester
         }
 
         // Questionnaire Context information when processing validation against a questionnaire
-        internal f2.Questionnaire _q2;
+        internal f5.Questionnaire _q2;
         internal f3.Questionnaire _q3;
         internal f4.Questionnaire _q4;
-        internal List<f2.Questionnaire.ItemComponent> _2gs;
-        internal List<f2.Questionnaire.ItemComponent> _2qs;
+        internal List<f5.Questionnaire.ItemComponent> _2gs;
+        internal List<f5.Questionnaire.ItemComponent> _2qs;
         internal List<f3.Questionnaire.ItemComponent> _3is;
         internal List<f4.Questionnaire.ItemComponent> _4is;
 
@@ -586,11 +576,11 @@ namespace FhirPathTester
                 if (f3.ModelInfo.IsDataType(result3) || f3.ModelInfo.IsPrimitive(result3))
                     return true;
             }
-            if (Enum.TryParse<f2.FHIRDefinedType>(ExpectedType, out var result))
+            if (Enum.TryParse<f5.FHIRAllTypes>(ExpectedType, out var result))
             {
                 if (String.Compare(ExpectedType, Hl7.Fhir.Utility.EnumUtility.GetLiteral(result), true) != 0)
                     return false;
-                if (f2.ModelInfo.IsDataType(ExpectedType) || f2.ModelInfo.IsPrimitive(ExpectedType))
+                if (f5.ModelInfo.IsDataType(ExpectedType) || f5.ModelInfo.IsPrimitive(ExpectedType))
                     return true;
             }
             return false;
@@ -736,13 +726,13 @@ namespace FhirPathTester
                             if (item.Name != propertyName && item.MatchesSuffixedName(propertyName))
                             {
                                 string ExpectedType = propertyName.Substring(item.Name.Length);
-                                if (Enum.TryParse<f2.FHIRDefinedType>(ExpectedType, out var result))
+                                if (Enum.TryParse<f5.FHIRDefinedType>(ExpectedType, out var result))
                                 {
-                                    if (f2.ModelInfo.IsDataType(result) || f2.ModelInfo.IsPrimitive(result))
+                                    if (f5.ModelInfo.IsDataType(result) || f5.ModelInfo.IsPrimitive(result))
                                     {
                                         // may need to recheck that a typename of value23 won't work here
-                                        string name = f2.ModelInfo.FhirTypeToFhirTypeName(result);
-                                        var t = f2.ModelInfo.GetTypeForFhirType(name);
+                                        string name = f5.ModelInfo.FhirTypeToFhirTypeName(result);
+                                        var t = f5.ModelInfo.GetTypeForFhirType(name);
                                         newContext._cm2.Add(ClassMapping.Create(t));
                                     }
                                 }
@@ -751,12 +741,12 @@ namespace FhirPathTester
                             {
                                 // would be great to be able to filter through only the viable types
                                 // but we don't have that, so just enumerate the available datatypes
-                                foreach (f2.FHIRDefinedType ev in Enum.GetValues(typeof(f2.FHIRDefinedType)))
+                                foreach (f5.FHIRDefinedType ev in Enum.GetValues(typeof(f5.FHIRDefinedType)))
                                 {
-                                    if (f2.ModelInfo.IsDataType(ev) && !f2.ModelInfo.IsCoreSuperType(ev))
+                                    if (f5.ModelInfo.IsDataType(ev) && !f5.ModelInfo.IsCoreSuperType(ev))
                                     {
-                                        string name = f2.ModelInfo.FhirTypeToFhirTypeName(ev);
-                                        var t = f2.ModelInfo.GetTypeForFhirType(name);
+                                        string name = f5.ModelInfo.FhirTypeToFhirTypeName(ev);
+                                        var t = f5.ModelInfo.GetTypeForFhirType(name);
                                         newContext._cm2.Add(ClassMapping.Create(t));
                                     }
                                 }
@@ -793,9 +783,9 @@ namespace FhirPathTester
                     _cm3 = _cm3.Where(t => t.Name == typeCast).ToList();
                 }
             }
-            if (Enum.TryParse<f2.FHIRDefinedType>(typeCast, out var result2))
+            if (Enum.TryParse<f5.FHIRAllTypes>(typeCast, out var result2))
             {
-                if (f2.ModelInfo.IsDataType(typeCast) || f2.ModelInfo.IsPrimitive(typeCast))
+                if (f5.ModelInfo.IsDataType(typeCast) || f5.ModelInfo.IsPrimitive(typeCast))
                 {
                     _cm2 = _cm2.Where(t => t.Name == typeCast).ToList();
                 }

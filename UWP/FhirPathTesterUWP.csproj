@@ -117,7 +117,6 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CoreModelsPreLoad.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -256,15 +255,17 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Hl7.Fhir.STU3" Version="3.6.0" Aliases="stu3" />
-    <PackageReference Include="Hl7.Fhir.R4" Version="3.6.0" Aliases="r4" />
-    <PackageReference Include="Hl7.Fhir.R5" Version="3.6.0" Aliases="r5" />
-    <PackageReference Include="Hl7.FhirPath" Version="3.6.0" />
+    <PackageReference Include="brianpos.Fhir.Base.FhirPath.Validator">
+      <Version>5.2.0-alpha1</Version>
+    </PackageReference>
+    <PackageReference Include="Hl7.Fhir.STU3" Version="5.2.0" Aliases="stu3" />
+    <PackageReference Include="Hl7.Fhir.R4" Version="5.2.0" Aliases="r4" />
+    <PackageReference Include="Hl7.Fhir.R5" Version="5.2.0" Aliases="r5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
       <Version>3.1.19</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.10</Version>
+      <Version>6.2.14</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI">
       <Version>6.1.1</Version>
@@ -273,10 +274,10 @@
       <Version>6.1.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
+      <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="Phonix">
-      <Version>1.0.1</Version>
+      <Version>1.0.2</Version>
     </PackageReference>
     <PackageReference Include="Porter2Stemmer">
       <Version>1.0.0</Version>
@@ -313,7 +314,7 @@
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

@@ -1,10 +1,21 @@
 ﻿
 ## Introduction ##
 This is a simple technical utility to offer a simple UI for testing
-fhirpath expressions with R4, STU3 and DSTU2 [HL7 FHIR][fhir-spec] resources.
+fhirpath expressions with R5, R4, STU3 [HL7 FHIR][fhir-spec] resources.
 
 It can execute the expressions as either an extract (for use in search 
 expressions) or validate (for use in StructureDefinition constraints)
+
+New Features in v1.3.0:
+
+* Updated to the Firely SDK v5.2.0
+* Now Supports the published 5.0 FHIR Release (via Firely SDK)
+
+New Features in v1.2.1:
+
+* Updated to recent HL7 FHIR NuGet pacakges 3.7.0
+* date arithmetic through the core fhirpath project
+* Custom dateadd function fully supported again
 
 New Features in v1.2.0:
 

@@ -35,9 +35,6 @@ namespace FhirPathTester
                 {
                     _st = new SymbolTable().AddStandardFP();
                     // _st.Add("rand", (object f) => { return "slim"; });
-
-                    _st.Add("binary.+", (object f, P.Date a, P.Quantity b) => Add(a, b), doNullProp: true);
-
                     // Custom function that returns the name of the property, rather than its value
                     _st.Add("propname", (object f) =>
                     {

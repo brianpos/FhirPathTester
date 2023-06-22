@@ -358,6 +358,9 @@ namespace FhirPathTesterUWP
 
         private string AppendXmlFramentResults(string fragment, string tooltip)
         {
+            if (fragment == null) 
+                return fragment;
+
             if (fragment.Length > 100)
             {
                 // pretty print the content
